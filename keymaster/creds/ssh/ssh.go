@@ -17,13 +17,13 @@ const (
 	MaxValidForSeconds = 7 * 24 * 3600
 )
 
-type User struct {
+type UserInfo struct {
 	Identity        string
 	Principals      []string
 	ValidForSeconds int
 }
 
-type Creds struct {
+type Credentials struct {
 	Certificate []byte
 	PrivateKey  []byte
 }
@@ -33,7 +33,7 @@ type Issuer struct {
 	Clock  clockwork.Clock
 }
 
-func (issuer *Issuer) GenerateKeyPair(user *User) (ssh.PublicKey, *rsa.PrivateKey, error) {
+func (issuer *Issuer) GenerateKeyPair(user *UserInfo) (ssh.PublicKey, *rsa.PrivateKey, error) {
 	if user.ValidForSeconds < 0 || user.ValidForSeconds > MaxValidForSeconds {
 		return nil, nil, errors.New("Invalid issuance period")
 	}
@@ -58,7 +58,7 @@ func (issuer *Issuer) GenerateKeyPair(user *User) (ssh.PublicKey, *rsa.PrivateKe
 	return publicKey, privateKey, nil
 }
 
-func (issuer *Issuer) CreateSignedCertificate(ca ssh.Signer, publicKey ssh.PublicKey, privateKey *rsa.PrivateKey, user *User, extensions map[string]string, options map[string]string) (*Creds, error) {
+func (issuer *Issuer) CreateSignedCertificate(ca ssh.Signer, publicKey ssh.PublicKey, privateKey *rsa.PrivateKey, user *UserInfo, extensions map[string]string, options map[string]string) (*Credentials, error) {
 	// Create a signed SSH certificate for the user
 	// As per: https://www.ietf.org/mail-archive/web/secsh/current/msg00327.html
 	now := uint64(issuer.Clock.Now().Unix())
@@ -92,7 +92,7 @@ func (issuer *Issuer) CreateSignedCertificate(ca ssh.Signer, publicKey ssh.Publi
 		return nil, err
 	}
 
-	sshCreds := Creds{
+	sshCreds := Credentials{
 		Certificate: userCertBytes,
 		PrivateKey:  private.Bytes(),
 	}

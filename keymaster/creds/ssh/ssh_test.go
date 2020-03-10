@@ -47,7 +47,7 @@ func TestKeyGeneration(t *testing.T) {
 	caSigner, err := ssh.ParsePrivateKey(privateBytes)
 	assert.Nil(t, err)
 
-	userInfo := User{
+	userInfo := UserInfo{
 		Identity:   "user_fred",
 		Principals: []string{"fred", "admfred"},
 		ValidForSeconds: 8 * 3600,
