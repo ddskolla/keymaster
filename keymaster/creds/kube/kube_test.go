@@ -17,13 +17,12 @@ import (
 )
 
 const (
-	OpenSSLCommand  = "/usr/bin/openssl"
+	OpenSSLCommand = "/usr/bin/openssl"
 	CaTestCertFile = "testdata/kube_ca.crt"
-	CaTestCertKey = "testdata/kube_ca.key"
+	CaTestCertKey  = "testdata/kube_ca.key"
 )
 
-
-func MustLoadFile(s string) ([]byte) {
+func MustLoadFile(s string) []byte {
 	res, err := ioutil.ReadFile(s)
 	if err != nil {
 		panic(err)
@@ -42,7 +41,7 @@ func TempFileName(prefix, suffix string) string {
 	randBytes := make([]byte, 16)
 	_, err := rand.Read(randBytes)
 	if err != nil {
-		panic(err)  // TODO: Not sure what else do if we can't read ...
+		panic(err) // TODO: Not sure what else do if we can't read ...
 	}
 	return filepath.Join(os.TempDir(), prefix+hex.EncodeToString(randBytes)+suffix)
 }
@@ -147,7 +146,7 @@ func (kp *UserKeyPair) Dump(path string) (certPath string, keyPath string, err e
 	if err != nil {
 		return
 	}
-	err = pem.Encode(certfile, &pem.Block{Type: "CERTIFICATE", Bytes: ukp.PublicKey})
+	err = pem.Encode(certfile, &pem.Block{Type: "CERTIFICATE", Bytes: kp.PublicKey})
 	if err != nil {
 		return
 	}
@@ -161,7 +160,7 @@ func (kp *UserKeyPair) Dump(path string) (certPath string, keyPath string, err e
 	if err != nil {
 		return
 	}
-	err = pem.Encode(keyfile, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: ukp.PrivateKey})
+	err = pem.Encode(keyfile, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: kp.PrivateKey})
 	if err != nil {
 		return
 	}

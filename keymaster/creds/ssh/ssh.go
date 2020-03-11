@@ -71,7 +71,7 @@ func (issuer *Issuer) CreateSignedCertificate(ca ssh.Signer, publicKey ssh.Publi
 		Key:             publicKey,
 		Permissions: ssh.Permissions{
 			CriticalOptions: options,
-			Extensions: extensions,
+			Extensions:      extensions,
 		},
 	}
 	// Sign the user's key with the CA key

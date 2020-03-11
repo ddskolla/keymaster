@@ -18,7 +18,7 @@ const (
 )
 
 // ZeroReader is a io.Reader which will always write zeros to the byte slice provided.
-type zeroReader struct{
+type zeroReader struct {
 	count int
 }
 
@@ -38,7 +38,7 @@ func TestKeyGeneration(t *testing.T) {
 	// Create an issuing CA with mocked RNG & time for deterministic keygen
 	sshIssuer := Issuer{
 		Random: rand.New(rand.NewSource(31337)),
-		Clock: clockwork.NewFakeClockAt(tm),
+		Clock:  clockwork.NewFakeClockAt(tm),
 	}
 
 	// Load the SSH CA private key from a file
@@ -48,8 +48,8 @@ func TestKeyGeneration(t *testing.T) {
 	assert.Nil(t, err)
 
 	userInfo := UserInfo{
-		Identity:   "user_fred",
-		Principals: []string{"fred", "admfred"},
+		Identity:        "user_fred",
+		Principals:      []string{"fred", "admfred"},
 		ValidForSeconds: 8 * 3600,
 	}
 
