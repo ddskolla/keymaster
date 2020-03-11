@@ -101,7 +101,7 @@ func GenerateSubjectKeyId(pub crypto.PublicKey) ([]byte, error) {
 // username and roles/groups in kubernetes.
 func (issuer *Issuer) GenerateUserKeyPair(cn string, orgs []string, validForSeconds int) (*UserKeyPair, error) {
 	// Generate an RSA keypair for the user
-	log.Printf("generating rsa keypair for: %s (%v)\n", cn, orgs)
+	log.Printf("generating rsa keypair for: %s (%v)", cn, orgs)
 	priv, err := rsa.GenerateKey(rand.Reader, RsaKeyBits)
 	if err != nil {
 		return nil, err
