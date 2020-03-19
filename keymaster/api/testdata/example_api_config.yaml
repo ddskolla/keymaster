@@ -44,5 +44,6 @@ credentials:
     config:
       a: b
       c: d
+
 access_control:
   whitelist_cidrs: ["192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"]

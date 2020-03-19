@@ -36,6 +36,7 @@ func TestCredentialsConfig_UnmarshalJSON(t *testing.T) {
 		"ssh1": {
 			Name: "ssh-example",
 			Type: "ssh_ca",
+			ValidForSeconds: 7200,
 			Config: CredentialsConfigSSH{
 				CAKey:"my-ssh-ca-key",
 			},
@@ -43,18 +44,21 @@ func TestCredentialsConfig_UnmarshalJSON(t *testing.T) {
 		"kube1": {
 			Name: "kube-example",
 			Type: "kubernetes",
+			ValidForSeconds: 7200,
 			Config: CredentialsConfigKube{
 			},
 		},
 		"iam_assumerole1": {
 			Name: "iam-assumerole-example",
 			Type: "iam_assume_role",
+			ValidForSeconds: 7200,
 			Config: CredentialsConfigIAMAssumeRole{
 			},
 		},
 		"iam_user1": {
 			Name: "iam-user-example",
 			Type: "iam_user",
+			ValidForSeconds: 7200,
 			Config: CredentialsConfigIAMUser{
 			},
 		},

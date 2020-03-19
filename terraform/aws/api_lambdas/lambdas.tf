@@ -10,7 +10,6 @@ locals {
     //      kube_sshca_bucket    = aws_s3_bucket.keymaster-secrets.bucket
     //      kube_sshca_key       = aws_s3_bucket_object.sshca-key.key
     //      saml_idp_certificate = file("${path.module}/${var.keymaster_saml_idp_certificate_file}")
-    //      ip_whitelist         = join(",", var.keymaster_ip_whitelist)
     //      valid_for_seconds    = var.keymaster_valid_for_seconds
     //      username_pattern     = var.keymaster_username_pattern
     //      service_config       = var.keymaster_service_config

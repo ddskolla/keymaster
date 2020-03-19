@@ -41,6 +41,7 @@ func (c *IdpConfig) UnmarshalJSON(data []byte) error {
 	}
 
 	c.Type = t.Type
+
 	switch c.Type {
 	case "saml":
 		var typedConfig IdpConfigSaml
@@ -77,16 +78,18 @@ type RoleConfig struct {
 }
 
 type CredentialsConfig struct {
-	Name string
-	Type string
-	Config interface{}
+	Name            string      `json:"name"`
+	Type            string      `json:"type"`
+	ValidForSeconds int         `json:"valid_for_seconds"`
+	Config          interface{} `json:"config"`
 }
 
 func (c *CredentialsConfig) UnmarshalJSON(data []byte) error {
 	var t struct {
-		Name string `json:"name"`
-		Type          string          `json:"type"`
-		UntypedConfig json.RawMessage `json:"config"`
+		Name            string          `json:"name"`
+		Type            string          `json:"type"`
+		ValidForSeconds int             `json:"valid_for_seconds"`
+		UntypedConfig   json.RawMessage `json:"config"`
 	}
 	err := json.Unmarshal(data, &t)
 	if err != nil {
@@ -95,6 +98,8 @@ func (c *CredentialsConfig) UnmarshalJSON(data []byte) error {
 
 	c.Name = t.Name
 	c.Type = t.Type
+	c.ValidForSeconds = t.ValidForSeconds
+
 	switch c.Type {
 	case "ssh_ca":
 		var typedConfig CredentialsConfigSSH
@@ -131,7 +136,6 @@ func (c *CredentialsConfig) UnmarshalJSON(data []byte) error {
 	}
 	return errors.New("unknown credential type: " + c.Type)
 }
-
 
 type CredentialsConfigSSH struct {
 	CAKey string
