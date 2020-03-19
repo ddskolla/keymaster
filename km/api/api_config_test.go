@@ -3,14 +3,38 @@ package api
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"testing"
 )
+
+func TestRequest_UnmarshalJSON(t *testing.T) {
+	testCases := map[string]Request{
+		"config": {
+			Type: "config",
+			Payload: &ConfigRequest{},
+		},
+	}
+
+	// Unmarshal c -> c2, check c == c2
+	for _, c := range testCases {
+		b, err := json.Marshal(c)
+		log.Println(string(b))
+		assert.NoError(t, err)
+		assert.NotEmpty(t, b)
+
+		var c2 Request
+		err = json.Unmarshal(b, &c2)
+		assert.NoError(t, err)
+
+		assert.Equal(t, c, c2)
+	}
+}
 
 func TestIdpConfig_UnmarshalJSON(t *testing.T) {
 	testCases := map[string]IdpConfig{
 		"t1": {
 			Type: "saml",
-			Config: IdpConfigSaml{
+			Config: &IdpConfigSaml{
 				Issuer: "foo",
 				Audience: "bar",
 				Certificate: "pem-goes-here",
@@ -18,6 +42,7 @@ func TestIdpConfig_UnmarshalJSON(t *testing.T) {
 		},
 	}
 
+	// Unmarshal c -> c2, check c == c2
 	for _, c := range testCases {
 		b, err := json.Marshal(c)
 		assert.NoError(t, err)
@@ -36,33 +61,31 @@ func TestCredentialsConfig_UnmarshalJSON(t *testing.T) {
 		"ssh1": {
 			Name: "ssh-example",
 			Type: "ssh_ca",
-			ValidForSeconds: 7200,
-			Config: CredentialsConfigSSH{
+			Config: &CredentialsConfigSSH{
 				CAKey:"my-ssh-ca-key",
 			},
 		},
 		"kube1": {
 			Name: "kube-example",
 			Type: "kubernetes",
-			ValidForSeconds: 7200,
-			Config: CredentialsConfigKube{
+			Config: &CredentialsConfigKube{
 			},
 		},
 		"iam_assumerole1": {
 			Name: "iam-assumerole-example",
 			Type: "iam_assume_role",
-			ValidForSeconds: 7200,
-			Config: CredentialsConfigIAMAssumeRole{
+			Config: &CredentialsConfigIAMAssumeRole{
 			},
 		},
 		"iam_user1": {
 			Name: "iam-user-example",
 			Type: "iam_user",
-			ValidForSeconds: 7200,
-			Config: CredentialsConfigIAMUser{
+			Config: &CredentialsConfigIAMUser{
 			},
 		},
 	}
+
+	// Unmarshal c -> c2, check c == c2
 	for _, c := range testCases {
 		b, err := json.Marshal(c)
 		assert.NoError(t, err)
