@@ -4,3 +4,6 @@ package api
 // - role names
 // - endpoints
 
+type CliConfiguration struct {
+
+}

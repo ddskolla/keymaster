@@ -1,0 +1,48 @@
+name: fooproject_nonprod
+idp:
+  type: saml
+  config:
+    issuer: foo_saml_nonprod
+    audience: fooproject_nonprod
+    certificate: pem_block
+roles:
+  - name: developer
+    credentials: [ssh-jumpbox, kube, aws-ro]
+  - name: cloudengineer
+    credentials: [ssh-all, kube, aws-admin]
+workflow:
+  todo: FIXME
+
+credentials:
+  - name: ssh-jumpbox
+    type: ssh_ca
+    config:
+      a: b
+      c: d
+  - name: ssh-all
+    type: ssh_ca
+    config:
+      a: b
+      c: d
+  - name: kube-user
+    type: kubernetes
+    config:
+      a: b
+      c: d
+  - name: kube-admin
+    type: kubernetes
+    config:
+      a: b
+      c: d
+  - name: aws-ro
+    type: iam_assume_role
+    config:
+      a: b
+      c: d
+  - name: aws-admin
+    type: iam_assume_role
+    config:
+      a: b
+      c: d
+access_control:
+  whitelist_cidrs: ["192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"]

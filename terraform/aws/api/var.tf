@@ -17,7 +17,7 @@ variable "artifact_s3_key" {
 variable "lambda_function_name" {
   description = "Lambda function name to create"
   type = string
-  default = "keymaster"
+  default = "km2"
 }
 
 variable "lambda_role_arn" {
@@ -29,3 +29,11 @@ variable "configuration" {
   description = "Keymaster configuration (environment variables)"
   type = map(string)
 }
+
+variable "reserved_concurrent_executions" {
+  description = "Reserved executions for each keymaster lambda"
+  type = number
+  default = -1
+}
+
+// TODO: kms key ARN for env var config
