@@ -15,9 +15,6 @@ locals {
     //      service_config       = var.keymaster_service_config
   }
   handler_functions = ["config", "direct_saml_auth", "direct_oidc_auth", "workflow_start", "workflow_auth"]
-  tracing_config = {
-
-  }
 }
 
 resource "aws_lambda_function" "km" {
@@ -29,11 +26,14 @@ resource "aws_lambda_function" "km" {
   s3_key        = var.artifact_s3_key
   role          = var.lambda_role_arn
   timeout       = var.timeout
-  environment {
-    variables = merge(local.lambda_config, {
-      "_HANDLER" = "workflow_auth"
-    })
+
+  dynamic "environment" {
+    for_each = var.configuration
+    content {
+      variables = environment.value
+    }
   }
-  tags          = merge({}, var.resource_tags)
+
   reserved_concurrent_executions = var.reserved_concurrent_executions
+  tags                           = merge({}, var.resource_tags)
 }

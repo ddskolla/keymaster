@@ -2,6 +2,7 @@
 variable "resource_tags" {
   description = "Map of tags to apply to all AWS resources"
   type = map(string)
+  default = {}
 }
 
 variable "artifact_file" {
