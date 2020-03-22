@@ -1,9 +1,12 @@
 name: fooproject_nonprod
 idp:
+  name: nonprod
   type: saml
   config:
     issuer: foo_saml_nonprod
     audience: fooproject_nonprod
+    # Cert can be specified as s3:// file:// or
+    # raw data
     certificate: pem_block
 roles:
   - name: developer

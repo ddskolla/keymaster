@@ -14,6 +14,7 @@ type ApiConfig struct {
 }
 
 type IdpConfig struct {
+	Name   string      `json:"name"`
 	Type   string      `json:"type"`
 	Config interface{} `json:"config"`
 }
