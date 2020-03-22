@@ -23,11 +23,13 @@ credentials:
     config:
       # Can be s3:// file:// or raw data
       ca_key: s3://my-bucket/sshca.key
+      principals: [$idpuser]
   - name: ssh-all
     type: ssh_ca
     config:
       # Can be s3:// file:// or raw data
       ca_key: s3://my-bucket/sshca.key
+      principals: [$idpuser, core, ec2-user]
   - name: kube-user
     type: kubernetes
     config:

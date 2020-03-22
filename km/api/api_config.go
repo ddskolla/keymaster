@@ -41,7 +41,8 @@ type CredentialsConfig struct {
 }
 
 type CredentialsConfigSSH struct {
-	CAKey string `json:"ca_key"`
+	CAKey      string   `json:"ca_key"`
+	Principals []string `json:"principals"`
 }
 
 type CredentialsConfigKube struct {
