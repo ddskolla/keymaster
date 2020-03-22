@@ -9,14 +9,30 @@ idp:
     # raw data
     certificate: pem_block
 roles:
-  - name: developer
-    credentials: [ssh-jumpbox, kube, aws-ro]
-    valid_for_seconds: 7200
   - name: cloudengineer
     credentials: [ssh-all, kube, aws-admin]
+    workflow: direct_identify
     valid_for_seconds: 7200
+  - name: developer
+    credentials: [ssh-jumpbox, kube, aws-ro]
+    workflow: developer
+    valid_for_seconds: 7200
+  - name: deployment
+    credentials: [kube, aws-admin]
+    workflow: deploy_workflow
 workflow:
-  todo: FIXME
+  - name: deploy
+    requester_requires_assertion: true
+    requester_can_approve: false
+    identify_roles:
+      adfs_role_deployer: 1
+    approver_roles:
+      adfs_role_approver: 1
+  - name: developer
+    requester_requires_assertion: true
+    requester_can_approve: false
+    identify_roles:
+      adfs_role_developer: 1
 credentials:
   - name: ssh-jumpbox
     type: ssh_ca
