@@ -8,42 +8,44 @@ idp:
 roles:
   - name: developer
     credentials: [ssh-jumpbox, kube, aws-ro]
+    valid_for_seconds: 7200
   - name: cloudengineer
     credentials: [ssh-all, kube, aws-admin]
+    valid_for_seconds: 7200
 workflow:
   todo: FIXME
-
 credentials:
   - name: ssh-jumpbox
     type: ssh_ca
     config:
-      a: b
-      c: d
+      # Can be s3:// file:// or raw data
+      ca_key: s3://my-bucket/sshca.key
   - name: ssh-all
     type: ssh_ca
     config:
-      a: b
-      c: d
+      # Can be s3:// file:// or raw data
+      ca_key: s3://my-bucket/sshca.key
   - name: kube-user
     type: kubernetes
     config:
-      a: b
-      c: d
+      # Can be s3:// file:// or raw data
+      ca_key: s3://my-bucket/sshca.key
   - name: kube-admin
     type: kubernetes
     config:
-      a: b
-      c: d
+      # Can be s3:// file:// or raw data
+      ca_key: s3://my-bucket/kubeca.key
   - name: aws-ro
     type: iam_assume_role
     config:
-      a: b
-      c: d
+      # Can be role ARN or role name, e.g. ARN of ReadOnly
+      # role in an account that km can assume-role to.
+      target_role: arn:aws:iam::062921715666:role/ReadOnly
   - name: aws-admin
     type: iam_assume_role
     config:
-      a: b
-      c: d
-
+      # Can be role ARN or role name, if only name is given the
+      # role will be looked up in the target account.
+      target_role: Administrator
 access_control:
   whitelist_cidrs: ["192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"]

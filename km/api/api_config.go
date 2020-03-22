@@ -29,25 +29,26 @@ type IdpConfigOidc struct {
 }
 
 type RoleConfig struct {
-	Name string
+	Name            string `json:"name"`
+	ValidForSeconds string `json:"valid_for_seconds"`
 }
 
 type CredentialsConfig struct {
-	Name            string      `json:"name"`
-	Type            string      `json:"type"`
-	Config          interface{} `json:"config"`
+	Name   string      `json:"name"`
+	Type   string      `json:"type"`
+	Config interface{} `json:"config"`
 }
 
 type CredentialsConfigSSH struct {
-	CAKey string
+	CAKey string `json:"ca_key"`
 }
 
 type CredentialsConfigKube struct {
-	CAKey string
+	CAKey string `json:"ca_key"`
 }
 
 type CredentialsConfigIAMAssumeRole struct {
-	// TODO
+	TargetRole string `json:"target_role"`
 }
 
 type CredentialsConfigIAMUser struct {
@@ -91,9 +92,9 @@ func (c *IdpConfig) UnmarshalJSON(data []byte) error {
 
 func (c *CredentialsConfig) UnmarshalJSON(data []byte) error {
 	var t struct {
-		Name            string          `json:"name"`
-		Type            string          `json:"type"`
-		UntypedConfig   json.RawMessage `json:"config"`
+		Name          string          `json:"name"`
+		Type          string          `json:"type"`
+		UntypedConfig json.RawMessage `json:"config"`
 	}
 	err := json.Unmarshal(data, &t)
 	if err != nil {
