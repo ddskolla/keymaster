@@ -63,7 +63,15 @@ type CredentialsConfigIAMUser struct {
 }
 
 type WorkflowConfig struct {
-	// TODO
+	BaseUrl string `json:"base_url"`
+	Policies []WorkflowPolicyConfig `json:"policies"`
+}
+
+type WorkflowPolicyConfig struct {
+	Name string `json:"name"`
+	RequesterCanApprove bool `json:"requester_can_approve"`
+	IdentifyRoles map[string]int `json:"identify_roles"`
+	ApproverRoles map[string]int `json:"approver_roles"`
 }
 
 type AccessControlConfig struct {
