@@ -11,7 +11,7 @@ idp:
 roles:
   - name: cloudengineer
     credentials: [ssh-all, kube, aws-admin]
-    workflow: direct_identify
+    workflow: cloudengineer
     valid_for_seconds: 7200
   - name: developer
     credentials: [ssh-jumpbox, kube, aws-ro]
@@ -41,6 +41,9 @@ workflow:
     - name: developer
       identify_roles:
         adfs_role_developer: 1
+    - name: cloudengineer
+      identify_roles:
+        adfs_role_cloudengineer: 1
 credentials:
   - name: ssh-jumpbox
     type: ssh_ca
