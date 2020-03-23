@@ -6,11 +6,12 @@ import (
 )
 
 type ApiConfig struct {
-	Name        string                `json:"name"`
-	Idp         IdpConfig             `json:"idp"`
-	Roles       map[string]RoleConfig `json:"roles"`
-	Credentials []CredentialsConfig   `json:"credentials"`
-	Workflow    WorkflowConfig        `json:"workflow"`
+	Name               string                   `json:"name"`
+	Idp                IdpConfig                `json:"idp"`
+	Roles              map[string]RoleConfig    `json:"roles"`
+	Credentials        []CredentialsConfig      `json:"credentials"`
+	Workflow           WorkflowConfig           `json:"workflow"`
+	CredentialDelivery CredentialDeliveryConfig `json:"credential_delivery"`
 }
 
 type IdpConfig struct {

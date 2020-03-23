@@ -21,18 +21,26 @@ roles:
     credentials: [kube, aws-admin]
     workflow: deploy_workflow
 workflow:
-  - name: deploy
-    requester_requires_assertion: true
-    requester_can_approve: false
-    identify_roles:
-      adfs_role_deployer: 1
-    approver_roles:
-      adfs_role_approver: 1
-  - name: developer
-    requester_requires_assertion: true
-    requester_can_approve: false
-    identify_roles:
-      adfs_role_developer: 1
+  config:
+    base_url: https://workflow.bsy.place/1/
+    other: stuff
+  policies:
+    - name: deploy_with_identify
+      identify_roles:
+        adfs_role_deployer: 1
+    - name: deploy_with_approval
+      requester_can_approve: false
+      approver_roles:
+        adfs_role_approver: 1
+    - name: deploy_with_identify_and_approval
+      requester_can_approve: false
+      identify_roles:
+        adfs_role_deployer: 1
+      approver_roles:
+        adfs_role_approver: 1
+    - name: developer
+      identify_roles:
+        adfs_role_developer: 1
 credentials:
   - name: ssh-jumpbox
     type: ssh_ca
