@@ -2,10 +2,38 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/ghodss/yaml"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"log"
 	"testing"
 )
+
+func TestLoadSampleConfigs(t *testing.T) {
+	expected := ApiConfig{
+		Name:        "fooproject_nonprod",
+		Idp:         []IdpConfig{
+			{
+				Name: "nonprod",
+				Type: "saml",
+				Config: &IdpConfigSaml{
+					Issuer:      "foo_saml_nonprod",
+					Audience:    "fooproject_nonprod",
+					Certificate: "pem_block",
+				},
+			},
+		},
+		Roles:       map[string]RoleConfig{},
+		Credentials: []CredentialsConfig{},
+		Workflow:    WorkflowConfig{},
+	}
+	data, err := ioutil.ReadFile("./testdata/example_api_config.yaml")
+	assert.NoError(t, err)
+	var result ApiConfig
+	err = yaml.Unmarshal([]byte(data), &result)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, result)
+}
 
 func TestRequest_UnmarshalJSON(t *testing.T) {
 	testCases := map[string]Request{
@@ -34,6 +62,7 @@ func TestIdpConfig_UnmarshalJSON(t *testing.T) {
 	testCases := map[string]IdpConfig{
 		"t1": {
 			Type: "saml",
+			Name: "my-idp",
 			Config: &IdpConfigSaml{
 				Issuer: "foo",
 				Audience: "bar",

@@ -6,12 +6,11 @@ import (
 )
 
 type ApiConfig struct {
-	Name               string                   `json:"name"`
-	Idp                IdpConfig                `json:"idp"`
-	Roles              map[string]RoleConfig    `json:"roles"`
-	Credentials        []CredentialsConfig      `json:"credentials"`
-	Workflow           WorkflowConfig           `json:"workflow"`
-	CredentialDelivery CredentialDeliveryConfig `json:"credential_delivery"`
+	Name        string                `json:"name"`
+	Idp         []IdpConfig           `json:"idp"`
+	Roles       map[string]RoleConfig `json:"roles"`
+	Credentials []CredentialsConfig   `json:"credentials"`
+	Workflow    WorkflowConfig        `json:"workflow"`
 }
 
 type IdpConfig struct {
@@ -31,8 +30,13 @@ type IdpConfigOidc struct {
 }
 
 type RoleConfig struct {
-	Name            string `json:"name"`
-	ValidForSeconds string `json:"valid_for_seconds"`
+	Name               string                       `json:"name"`
+	ValidForSeconds    string                       `json:"valid_for_seconds"`
+	CredentialDelivery RoleCredentialDeliveryConfig `json:"credential_delivery"`
+}
+
+type RoleCredentialDeliveryConfig struct {
+	KmsWrapWith string `json:"kms_wrap_with"`
 }
 
 type CredentialsConfig struct {
@@ -68,6 +72,7 @@ type AccessControlConfig struct {
 
 func (c *IdpConfig) UnmarshalJSON(data []byte) error {
 	var t struct {
+		Name string `json:"name"`
 		Type          string          `json:"type"`
 		UntypedConfig json.RawMessage `json:"config"`
 	}
@@ -75,6 +80,7 @@ func (c *IdpConfig) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
+	c.Name = t.Name
 	c.Type = t.Type
 	var config interface{}
 	switch c.Type {

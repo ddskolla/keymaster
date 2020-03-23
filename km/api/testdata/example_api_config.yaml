@@ -1,13 +1,13 @@
 name: fooproject_nonprod
 idp:
-  name: nonprod
-  type: saml
-  config:
-    issuer: foo_saml_nonprod
-    audience: fooproject_nonprod
-    # Cert can be specified as s3:// file:// or
-    # raw data
-    certificate: pem_block
+  - name: nonprod
+    type: saml
+    config:
+      issuer: foo_saml_nonprod
+      audience: fooproject_nonprod
+      # Cert can be specified as s3:// file:// or
+      # raw data
+      certificate: pem_block
 roles:
   - name: cloudengineer
     credentials: [ssh-all, kube, aws-admin]
@@ -20,6 +20,9 @@ roles:
   - name: deployment
     credentials: [kube, aws-admin]
     workflow: deploy_workflow
+    credential_delivery:
+      # KMS alias or ARN
+      kms_wrap_with: arn:aws:kms:ap-southeast-2:062921715532:key/95a6a059-8281-4280-8500-caf8cc217367
 workflow:
   config:
     base_url: https://workflow.bsy.place/1/
