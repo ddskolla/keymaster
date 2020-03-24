@@ -6,11 +6,12 @@ import (
 )
 
 type ApiConfig struct {
-	Name        string                `json:"name"`
-	Idp         []IdpConfig           `json:"idp"`
-	Roles       map[string]RoleConfig `json:"roles"`
-	Credentials []CredentialsConfig   `json:"credentials"`
-	Workflow    WorkflowConfig        `json:"workflow"`
+	Name          string              `json:"name"`
+	Idp           []IdpConfig         `json:"idp"`
+	Roles         []RoleConfig        `json:"roles"`
+	Credentials   []CredentialsConfig `json:"credentials"`
+	Workflow      WorkflowConfig      `json:"workflow"`
+	AccessControl AccessControlConfig `json:"access_control"`
 }
 
 type IdpConfig struct {
@@ -31,7 +32,9 @@ type IdpConfigOidc struct {
 
 type RoleConfig struct {
 	Name               string                       `json:"name"`
-	ValidForSeconds    string                       `json:"valid_for_seconds"`
+	Workflow           string                       `json:"workflow"`
+	Credentials        []string                     `json:"credentials"`
+	ValidForSeconds    int                          `json:"valid_for_seconds"`
 	CredentialDelivery RoleCredentialDeliveryConfig `json:"credential_delivery"`
 }
 
@@ -63,15 +66,15 @@ type CredentialsConfigIAMUser struct {
 }
 
 type WorkflowConfig struct {
-	BaseUrl string `json:"base_url"`
+	BaseUrl  string                 `json:"base_url"`
 	Policies []WorkflowPolicyConfig `json:"policies"`
 }
 
 type WorkflowPolicyConfig struct {
-	Name string `json:"name"`
-	RequesterCanApprove bool `json:"requester_can_approve"`
-	IdentifyRoles map[string]int `json:"identify_roles"`
-	ApproverRoles map[string]int `json:"approver_roles"`
+	Name                string         `json:"name"`
+	RequesterCanApprove bool           `json:"requester_can_approve"`
+	IdentifyRoles       map[string]int `json:"identify_roles"`
+	ApproverRoles       map[string]int `json:"approver_roles"`
 }
 
 type AccessControlConfig struct {
@@ -80,7 +83,7 @@ type AccessControlConfig struct {
 
 func (c *IdpConfig) UnmarshalJSON(data []byte) error {
 	var t struct {
-		Name string `json:"name"`
+		Name          string          `json:"name"`
 		Type          string          `json:"type"`
 		UntypedConfig json.RawMessage `json:"config"`
 	}

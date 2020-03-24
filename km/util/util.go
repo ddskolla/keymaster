@@ -1,6 +1,7 @@
 package util
 
 import (
+	"encoding/base64"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -15,7 +16,10 @@ func Load(s string) (string, error) {
 		sess := session.Must(session.NewSession())
 		return LoadFromS3(sess, s)
 	} else if strings.HasPrefix(s, "file://") {
-		b, err := ioutil.ReadFile(s)
+		b, err := ioutil.ReadFile(s[7:])
+		return string(b), err
+	} else if strings.HasPrefix(s, "data://") {
+		b, err := base64.StdEncoding.DecodeString(s[7:])
 		return string(b), err
 	}
 	return s, nil

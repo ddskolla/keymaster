@@ -19,7 +19,7 @@ roles:
     valid_for_seconds: 7200
   - name: deployment
     credentials: [kube, aws-admin]
-    workflow: deploy_workflow
+    workflow: deploy_with_identify_and_approval
     credential_delivery:
       # KMS alias or ARN
       kms_wrap_with: arn:aws:kms:ap-southeast-2:062921715532:key/95a6a059-8281-4280-8500-caf8cc217367
@@ -62,7 +62,7 @@ credentials:
     type: kubernetes
     config:
       # Can be s3:// file:// or raw data
-      ca_key: s3://my-bucket/sshca.key
+      ca_key: s3://my-bucket/kubeca.key
   - name: kube-admin
     type: kubernetes
     config:
