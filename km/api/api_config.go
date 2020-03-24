@@ -5,13 +5,20 @@ import (
 	"github.com/pkg/errors"
 )
 
-type ApiConfig struct {
+type Config struct {
 	Name          string              `json:"name"`
 	Idp           []IdpConfig         `json:"idp"`
 	Roles         []RoleConfig        `json:"roles"`
-	Credentials   []CredentialsConfig `json:"credentials"`
 	Workflow      WorkflowConfig      `json:"workflow"`
+	Credentials   []CredentialsConfig `json:"credentials"`
 	AccessControl AccessControlConfig `json:"access_control"`
+}
+
+type ConfigPublic struct {
+	Name     string         `json:"name"`
+	Idp      []IdpConfig    `json:"idp"`
+	Roles    []RoleConfig   `json:"roles"`
+	Workflow WorkflowConfig `json:"workflow"`
 }
 
 type IdpConfig struct {

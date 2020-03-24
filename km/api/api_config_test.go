@@ -5,12 +5,11 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
-	"log"
 	"testing"
 )
 
 func TestLoadSampleConfigs(t *testing.T) {
-	expected := ApiConfig{
+	expected := Config{
 		Name:        "fooproject_nonprod",
 		Idp:         []IdpConfig{
 			{
@@ -140,33 +139,10 @@ func TestLoadSampleConfigs(t *testing.T) {
 	}
 	data, err := ioutil.ReadFile("./testdata/example_api_config.yaml")
 	assert.NoError(t, err)
-	var result ApiConfig
+	var result Config
 	err = yaml.Unmarshal([]byte(data), &result)
 	assert.NoError(t, err)
 	assert.Equal(t, expected, result)
-}
-
-func TestRequest_UnmarshalJSON(t *testing.T) {
-	testCases := map[string]Request{
-		"config": {
-			Type: "config",
-			Payload: &ConfigRequest{},
-		},
-	}
-
-	// Unmarshal c -> c2, check c == c2
-	for _, c := range testCases {
-		b, err := json.Marshal(c)
-		log.Println(string(b))
-		assert.NoError(t, err)
-		assert.NotEmpty(t, b)
-
-		var c2 Request
-		err = json.Unmarshal(b, &c2)
-		assert.NoError(t, err)
-
-		assert.Equal(t, c, c2)
-	}
 }
 
 func TestIdpConfig_UnmarshalJSON(t *testing.T) {

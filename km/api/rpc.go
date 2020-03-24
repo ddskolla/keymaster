@@ -6,7 +6,7 @@ import (
 )
 
 type Request struct {
-	Type string `json:"type"`
+	Type    string      `json:"type"`
 	Payload interface{} `json:"payload"`
 }
 
@@ -14,15 +14,16 @@ type ConfigRequest struct {
 }
 
 type ConfigResponse struct {
-	Version string `json:"version"`
+	Version string       `json:"version"`
+	Config  ConfigPublic `json:"config"`
 }
 
 type DirectSamlAuthRequest struct {
-	RequestedAccess string  `json:"requested_access"`
-	SAMLResponse    string  `json:"saml_response"`
-	SigAlg          string  `json:"sig_alg"`
-	Signature       string  `json:"signature"`
-	RelayState      *string `json:"relay_state,omitempty"`
+	RequestedRole string  `json:"requested_role"`
+	SAMLResponse  string  `json:"saml_response"`
+	SigAlg        string  `json:"sig_alg"`
+	Signature     string  `json:"signature"`
+	RelayState    *string `json:"relay_state,omitempty"`
 }
 
 type DirectOidcAuthRequest struct {
@@ -47,7 +48,7 @@ type WorkflowAuthResponse struct {
 
 func (c *Request) UnmarshalJSON(data []byte) error {
 	var t struct {
-		Type string `json:"type"`
+		Type    string          `json:"type"`
 		Payload json.RawMessage `json:"payload"`
 	}
 	err := json.Unmarshal(data, &t)

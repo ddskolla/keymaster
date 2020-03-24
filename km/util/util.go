@@ -11,24 +11,24 @@ import (
 	"strings"
 )
 
-func Load(s string) (string, error) {
+func Load(s string) ([]byte, error) {
 	if strings.HasPrefix(s, "s3://") {
 		sess := session.Must(session.NewSession())
 		return LoadFromS3(sess, s)
 	} else if strings.HasPrefix(s, "file://") {
 		b, err := ioutil.ReadFile(s[7:])
-		return string(b), err
+		return b, err
 	} else if strings.HasPrefix(s, "data://") {
 		b, err := base64.StdEncoding.DecodeString(s[7:])
-		return string(b), err
+		return b, err
 	}
-	return s, nil
+	return []byte(s), nil
 }
 
-func LoadFromS3(sess *session.Session, s3uri string) (string, error) {
+func LoadFromS3(sess *session.Session, s3uri string) ([]byte, error) {
 	u, err := url.Parse(s3uri)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	bucket := u.Host
 	key := strings.TrimLeft(u.Path, "/")
@@ -41,7 +41,7 @@ func LoadFromS3(sess *session.Session, s3uri string) (string, error) {
 			Key:    aws.String(key),
 		})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(buf.Bytes()), nil
+	return buf.Bytes(), nil
 }

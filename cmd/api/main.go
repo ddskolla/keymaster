@@ -5,40 +5,27 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/bsycorp/keymaster/km/api"
 	"github.com/pkg/errors"
+	"os"
 )
 
-func HandleConfig(ctx context.Context, req *api.ConfigRequest) (*api.ConfigResponse, error) {
-	return nil, errors.New("Not implemented")
-}
-
-func HandleDirectSamlAuth(ctx context.Context, req *api.DirectSamlAuthRequest) (*api.DirectAuthResponse, error) {
-	return nil, errors.New("Not implemented")
-}
-
-func HandleDirectOidcAuth(ctx context.Context, req *api.DirectOidcAuthRequest) (*api.DirectAuthResponse, error) {
-	return nil, errors.New("Not implemented")
-}
-
-func HandleWorkflowStart(ctx context.Context, req *api.WorkflowStartRequest) (*api.WorkflowStartResponse, error) {
-	return nil, errors.New("Not implemented")
-}
-
-func HandleWorkflowAuth(ctx context.Context, req *api.WorkflowAuthRequest) (*api.WorkflowAuthResponse, error) {
-	return nil, errors.New("Not implemented")
-}
 
 func Handler(ctx context.Context, req api.Request) (interface{}, error) {
+	var km api.Server
+	err := km.Configure(os.Getenv("CONFIG"))
+	if err != nil {
+		return nil, errors.New("Error loading km api configuration")
+	}
 	switch r := req.Payload.(type) {
 	case *api.ConfigRequest:
-		return HandleConfig(ctx, r)
+		return km.HandleConfig(r)
 	case *api.DirectSamlAuthRequest:
-		return HandleDirectSamlAuth(ctx, r)
+		return km.HandleDirectSamlAuth(r)
 	case *api.DirectOidcAuthRequest:
-		return HandleDirectOidcAuth(ctx, r)
+		return km.HandleDirectOidcAuth(r)
 	case *api.WorkflowStartRequest:
-		return HandleWorkflowStart(ctx, r)
+		return km.HandleWorkflowStart(r)
 	case *api.WorkflowAuthRequest:
-		return HandleWorkflowAuth(ctx, r)
+		return km.HandleWorkflowAuth(r)
 	default:
 		return nil, errors.New("unexpected request")
 	}
