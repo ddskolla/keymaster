@@ -3,31 +3,34 @@ package workflow
 import "context"
 
 type Workflow struct {
-
+	BaseUrl string
+	PolicyEncrypter string // TODO: key, signingmethod etc
 }
 
 type StartRequest struct {
-
+	// Encrypted workflow policy
 }
 
 type StartResponse struct {
-
+	// Workflow id
+	// Workflow nonce
 }
 
 type GetDetailsRequest struct {
-
+	// Workflow id
 }
 
 type GetDetailsResponse struct {
-	
+	// State: pending / completed
 }
 
 type GetAssertionsRequest struct {
-
+	// Workflow id
+	// Workflow nonce
 }
 
 type GetAssertionsResponse struct {
-
+	// Bag of SAML assertions. Could be wrapped(?)
 }
 
 func (w *Workflow) Start(ctx context.Context, req *StartRequest) (*StartResponse, error) {
