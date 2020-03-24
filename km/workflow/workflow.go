@@ -8,7 +8,22 @@ type Workflow struct {
 }
 
 type StartRequest struct {
-	// Encrypted workflow policy
+	Requester struct {
+		Name string `json:"name"`
+		Username string `json:"username"`
+		Email string `json:"email"`
+	} `json:"requester"`
+	Source struct {
+		// Source Key? For gitlab?
+		Description string `json:"description"`
+		DetailsURI string `json:"details_uri"`
+	} `json:"source"`
+	Target struct {
+		Name string `json:"name"`
+		// Target discovery URI?
+	} `json:"target"`
+	// To be encrypted with workflow public key
+	WorkflowPolicy string `json:"workflow_policy"`
 }
 
 type StartResponse struct {
