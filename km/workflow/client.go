@@ -11,7 +11,6 @@ import (
 
 type Client struct {
 	BaseURL *url.URL
-	UserAgent string
 	HttpClient *http.Client
 	PolicyEncrypter string // TODO: key, signingmethod etc
 }
