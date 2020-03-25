@@ -58,11 +58,7 @@ type GetAssertionsResponse struct {
 }
 
 func (c *Client) Start(ctx context.Context, req *StartRequest) (*StartResponse, error) {
-	body, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-	httpReq, err := c.newRequest(ctx, "POST", "/1/workflow/create", body)
+	httpReq, err := c.newRequest(ctx, "POST", "/1/workflow/create", req)
 	if err != nil {
 		return nil, err
 	}
@@ -72,11 +68,7 @@ func (c *Client) Start(ctx context.Context, req *StartRequest) (*StartResponse, 
 }
 
 func (c *Client) GetDetails(ctx context.Context, req *GetDetailsRequest) (*GetDetailsResponse, error) {
-	body, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-	httpReq, err := c.newRequest(ctx, "POST", "/1/workflow/getDetails", body)
+	httpReq, err := c.newRequest(ctx, "POST", "/1/workflow/getDetails", req)
 	if err != nil {
 		return nil, err
 	}
@@ -86,11 +78,7 @@ func (c *Client) GetDetails(ctx context.Context, req *GetDetailsRequest) (*GetDe
 }
 
 func (c *Client) GetAssertions(ctx context.Context, req *GetAssertionsRequest) (*GetAssertionsResponse, error) {
-	body, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-	httpReq, err := c.newRequest(ctx, "POST", "/1/workflow/getAssertions", body)
+	httpReq, err := c.newRequest(ctx, "POST", "/1/workflow/getAssertions", req)
 	if err != nil {
 		return nil, err
 	}
