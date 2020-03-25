@@ -78,3 +78,4 @@ func (c *Request) UnmarshalJSON(data []byte) error {
 	c.Payload = payload
 	return nil
 }
+
