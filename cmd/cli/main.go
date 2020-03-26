@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/bsycorp/keymaster/km/api"
 	"github.com/bsycorp/keymaster/km/workflow"
+	"github.com/davecgh/go-spew/spew"
 	"log"
 	"os"
 	"runtime"
+	"time"
 )
 
 func main() {
@@ -26,12 +29,76 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(config)
+	//log.Println(config)
 
-	// Then create a workflow session
-	// TODO: look this up from config
-	workflow := workflow.Client("https://")
+	// Get the right policy
+	workflowPolicyName := "deploy_with_identify_and_approval"
+	configWorkflowPolicy := config.Config.Workflow.FindPolicyByName(workflowPolicyName)
+	if configWorkflowPolicy == nil {
+		log.Fatalf("workflow policy %s not found in config", workflowPolicyName)
+	}
+	workflowPolicy := workflow.Policy{ // Blech
+		Name:                configWorkflowPolicy.Name,
+		IdpName:             configWorkflowPolicy.IdpName,
+		RequesterCanApprove: configWorkflowPolicy.RequesterCanApprove,
+		IdentifyRoles:       configWorkflowPolicy.IdentifyRoles,
+		ApproverRoles:       configWorkflowPolicy.ApproverRoles,
+	}
 
+	// Then create a workflow client
+	// TODO: the workflow URL should come from config
+	workflowApi, err := workflow.NewClient("https://workflow.int.btr.place/1")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// And start a workflow session
+	startResult, err := workflowApi.Start(context.Background(), &workflow.StartRequest{
+		Requester: workflow.Requester{
+			Name:     "a",
+			Username: "b",
+			Email:    "c",
+		},
+		Source: workflow.Source{
+			Description: "",
+			DetailsURI: "",
+		},
+		Target: workflow.Target{
+			Name: "fred",
+		},
+		Policy: workflowPolicy,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	spew.Dump(startResult)
+
+	// Now fix up the workflow URL
+	fixedWorkflowUrl := "https://workflow.int.btr.place/workflow/" + startResult.WorkflowId
+	log.Printf("CLICK THIS LINK: %s", fixedWorkflowUrl)
+	// Now
+
+	for {
+		getAssertionsResult, err := workflowApi.GetAssertions(context.Background(), &workflow.GetAssertionsRequest{
+			WorkflowId: startResult.WorkflowId,
+			Nonce:      startResult.Nonce,
+		})
+		if err != nil {
+			log.Println(err)
+		}
+		if getAssertionsResult.Status == "CREATED" {
+			log.Println("WATING FOR APPROVAL")
+			time.Sleep(5 * time.Second)
+		} else {
+			spew.Dump(getAssertionsResult)
+			break
+		}
+	}
+	log.Println("GOT ASSERTIONS!")
+
+
+	// TODO: post back to the KM api
 }
 
 func UserHomeDir() string {

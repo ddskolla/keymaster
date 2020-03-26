@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"github.com/pkg/errors"
 	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 )
@@ -28,28 +30,44 @@ func NewClient(baseUrl string) (*Client, error) {
 	}, nil
 }
 
+type Requester struct {
+	Name string `json:"name"`
+	Username string `json:"username"`
+	Email string `json:"email"`
+}
+
+type Source struct {
+	// Source Key? For gitlab?
+	Description string `json:"description"`
+	DetailsURI string `json:"details_uri"`
+}
+
+type Target struct {
+	Name string `json:"name"`
+	// Target discovery URI?
+}
+
+type Policy struct {
+	Name                string         `json:"name"`
+	IdpName             string         `json:"idp_name"`
+	RequesterCanApprove bool           `json:"requester_can_approve"`
+	IdentifyRoles       map[string]int `json:"identify_roles"`
+	ApproverRoles       map[string]int `json:"approver_roles"`
+}
+
 type StartRequest struct {
-	Requester struct {
-		Name string `json:"name"`
-		Username string `json:"username"`
-		Email string `json:"email"`
-	} `json:"requester"`
-	Source struct {
-		// Source Key? For gitlab?
-		Description string `json:"description"`
-		DetailsURI string `json:"details_uri"`
-	} `json:"source"`
-	Target struct {
-		Name string `json:"name"`
-		// Target discovery URI?
-	} `json:"target"`
+	Requester Requester `json:"requester"`
+	Source Source `json:"source"`
+	Target Target`json:"target"`
 	// To be encrypted with workflow public key
-	WorkflowPolicy string `json:"workflow_policy"`
+	// TODO: change type here, separation of concerns...
+	Policy Policy `json:"policy"`
 }
 
 type StartResponse struct {
-	// Workflow id
-	// Workflow nonce
+	WorkflowId string `json:"workflow_id"`
+	WorkflowUrl string `json:"workflow_url"`
+	Nonce string `json:"nonce"`
 }
 
 type GetDetailsRequest struct {
@@ -61,12 +79,15 @@ type GetDetailsResponse struct {
 }
 
 type GetAssertionsRequest struct {
-	// Workflow id
-	// Workflow nonce
+	WorkflowId string `json:"workflow_id"`
+	Nonce string `json:"nonce"`
 }
 
 type GetAssertionsResponse struct {
 	// Bag of SAML assertions. Could be wrapped(?)
+	//Workflow Workflow `json:"workflow"` //???
+	Status string `json:"status"` //???
+	Assertions []string `json:"assertions"` // Resulting IDP assertions
 }
 
 func (c *Client) Start(ctx context.Context, req *StartRequest) (*StartResponse, error) {
@@ -127,6 +148,12 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	err = json.NewDecoder(resp.Body).Decode(v)
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.Wrap(err, "error reading workflow response body")
+	}
+	log.Printf("RESP FROM WORKFLOW: %s", string(body))
+	err = json.Unmarshal(body, v)
+	// err = json.NewDecoder(resp.Body).Decode(v)
 	return resp, err
 }

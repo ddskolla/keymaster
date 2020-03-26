@@ -77,8 +77,18 @@ type WorkflowConfig struct {
 	Policies []WorkflowPolicyConfig `json:"policies"`
 }
 
+func (wc *WorkflowConfig) FindPolicyByName(name string) (*WorkflowPolicyConfig) {
+	for _, p := range wc.Policies {
+		if p.Name == name {
+			return &p
+		}
+	}
+	return nil
+}
+
 type WorkflowPolicyConfig struct {
 	Name                string         `json:"name"`
+	IdpName             string         `json:"idp_name"`
 	RequesterCanApprove bool           `json:"requester_can_approve"`
 	IdentifyRoles       map[string]int `json:"identify_roles"`
 	ApproverRoles       map[string]int `json:"approver_roles"`

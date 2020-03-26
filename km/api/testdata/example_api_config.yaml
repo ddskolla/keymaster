@@ -26,22 +26,27 @@ workflow:
   base_url: https://workflow.bsy.place/1/
   policies:
     - name: deploy_with_identify
+      idp_name: nonprod
       identify_roles:
         adfs_role_deployer: 1
     - name: deploy_with_approval
+      idp_name: nonprod
       requester_can_approve: false
       approver_roles:
         adfs_role_approver: 1
     - name: deploy_with_identify_and_approval
+      idp_name: nonprod
       requester_can_approve: false
       identify_roles:
         adfs_role_deployer: 1
       approver_roles:
         adfs_role_approver: 1
     - name: developer
+      idp_name: nonprod
       identify_roles:
         adfs_role_developer: 1
     - name: cloudengineer
+      idp_name: nonprod
       identify_roles:
         adfs_role_cloudengineer: 1
 credentials:

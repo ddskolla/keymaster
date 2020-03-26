@@ -95,6 +95,7 @@ func TestLoadSampleConfigs(t *testing.T) {
 			Policies: []WorkflowPolicyConfig{
 				{
 					Name: "deploy_with_identify",
+					IdpName: "nonprod",
 					RequesterCanApprove: false,
 					IdentifyRoles: map[string]int{
 						"adfs_role_deployer": 1,
@@ -102,6 +103,7 @@ func TestLoadSampleConfigs(t *testing.T) {
 				},
 				{
 					Name: "deploy_with_approval",
+					IdpName: "nonprod",
 					RequesterCanApprove: false,
 					ApproverRoles: map[string]int{
 						"adfs_role_approver": 1,
@@ -109,6 +111,7 @@ func TestLoadSampleConfigs(t *testing.T) {
 				},
 				{
 					Name: "deploy_with_identify_and_approval",
+					IdpName: "nonprod",
 					RequesterCanApprove: false,
 					IdentifyRoles: map[string]int{
 						"adfs_role_deployer": 1,
@@ -119,12 +122,14 @@ func TestLoadSampleConfigs(t *testing.T) {
 				},
 				{
 					Name: "developer",
+					IdpName: "nonprod",
 					IdentifyRoles: map[string]int{
 						"adfs_role_developer": 1,
 					},
 				},
 				{
 					Name: "cloudengineer",
+					IdpName: "nonprod",
 					IdentifyRoles: map[string]int{
 						"adfs_role_cloudengineer": 1,
 					},

@@ -68,11 +68,10 @@ func (c *Client) rpc(req interface{}, resp interface{}) (error) {
 		return err
 	}
 	// TODO: looks like there is more stuff in the result to look at
-	log.Println(result)
 	err = json.Unmarshal(result.Payload, resp)
 	if err != nil {
 		return errors.Wrap(err, "rpc error during unmarshal")
 	}
-	spew.Dump(resp)
+	//spew.Dump(resp)
 	return nil
 }
