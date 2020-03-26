@@ -1,8 +1,8 @@
 # artifact_s3_bucket = "my-bucket"
 # artifact_s3_key = "/path/to/km.zip"
-artifact_s3_file = ""
+artifact_file = "../../../build/keymaster-api.zip"
 lambda_role_arn = "not_a_real_arn"
 configuration = {
-  foo: "bar"
+  config: "{}"
 }
 resource_tags = {}

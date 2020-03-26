@@ -36,7 +36,7 @@ variable "lambda_role_arn" {
 
 variable "configuration" {
   description = "Keymaster configuration (environment variables)"
-  type = map(string)
+  type = map
 }
 
 variable "reserved_concurrent_executions" {

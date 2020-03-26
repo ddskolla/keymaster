@@ -24,11 +24,14 @@ resource "aws_lambda_function" "km" {
   filename      = var.artifact_file
   s3_bucket     = var.artifact_s3_bucket
   s3_key        = var.artifact_s3_key
-  role          = var.lambda_role_arn
-  timeout       = var.timeout
+
+  // TODO: conditional
+  //role          = var.lambda_role_arn
+  role    = aws_iam_role.km.arn
+  timeout = var.timeout
 
   dynamic "environment" {
-    for_each = var.configuration
+    for_each = var.configuration[*]
     content {
       variables = environment.value
     }
