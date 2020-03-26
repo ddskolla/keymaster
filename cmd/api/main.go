@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/bsycorp/keymaster/km/api"
 	"github.com/pkg/errors"
+	"log"
 	"os"
 )
 
@@ -13,7 +14,9 @@ func Handler(ctx context.Context, req api.Request) (interface{}, error) {
 	var km api.Server
 	err := km.Configure(os.Getenv("CONFIG"))
 	if err != nil {
-		return nil, errors.New("Error loading km api configuration")
+		nerr := errors.Wrap(err,"Error loading km api configuration")
+		log.Println(nerr)
+		return nil, nerr
 	}
 	switch r := req.Payload.(type) {
 	case *api.ConfigRequest:

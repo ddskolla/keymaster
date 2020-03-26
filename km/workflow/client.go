@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/pkg/errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -13,6 +14,18 @@ type Client struct {
 	BaseURL *url.URL
 	HttpClient *http.Client
 	PolicyEncrypter string // TODO: key, signingmethod etc
+}
+
+func NewClient(baseUrl string) (*Client, error) {
+	u, err := url.Parse(baseUrl)
+	if err != nil {
+		return nil, errors.Wrap(err, "error parsing workflow client URL")
+	}
+	return &Client{
+		BaseURL:         u,
+		HttpClient:      http.DefaultClient,
+		PolicyEncrypter: "", // TODO
+	}, nil
 }
 
 type StartRequest struct {

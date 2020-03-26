@@ -32,11 +32,12 @@ variable "lambda_function_name" {
 variable "lambda_role_arn" {
   description = "Role for keymaster lambda"
   type = string
+  default = null
 }
 
 variable "configuration" {
   description = "Keymaster configuration (environment variables)"
-  type = map
+  type = map(string)
 }
 
 variable "reserved_concurrent_executions" {

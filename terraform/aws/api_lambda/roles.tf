@@ -12,10 +12,10 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 
 data "aws_iam_policy_document" "km" {
   statement {
-    actions = ["s3:GetObject"]
+    actions = ["s3:*"]
     resources = [
-      "arn:aws:s3:::notreal-keymaster-secrets/*",
-      "arn:aws:s3:::notreal-keymaster-secrets"
+      "arn:aws:s3:::km2-test/*",
+      "arn:aws:s3:::km2-test"
     ]
     effect = "Allow"
   }

@@ -20,6 +20,9 @@ func (s *Server) Configure(config string) error {
 	// literal or a reference to a bucket or file).
 	// Then we load as YAML or JSON.
 	configData, err := util.Load(config)
+	if err != nil {
+		return err
+	}
 	if strings.HasPrefix(string(configData), "{") {
 		err = json.Unmarshal(configData, &tmpConfig)
 		if err != nil {
