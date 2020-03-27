@@ -63,5 +63,8 @@ func (s *Server) HandleWorkflowStart(req *WorkflowStartRequest) (*WorkflowStartR
 }
 
 func (s *Server) HandleWorkflowAuth(req *WorkflowAuthRequest) (*WorkflowAuthResponse, error) {
+	// Look at the workflow state
+	// Validate the assertions
+	// Issue all the credentials
 	return nil, errors.New("Not implemented")
 }

@@ -32,7 +32,7 @@ func main() {
 	//log.Println(config)
 
 	// Get the right policy
-	workflowPolicyName := "deploy_with_identify_and_approval"
+	workflowPolicyName := "deploy_with_approval"
 	configWorkflowPolicy := config.Config.Workflow.FindPolicyByName(workflowPolicyName)
 	if configWorkflowPolicy == nil {
 		log.Fatalf("workflow policy %s not found in config", workflowPolicyName)
@@ -55,16 +55,17 @@ func main() {
 	// And start a workflow session
 	startResult, err := workflowApi.Start(context.Background(), &workflow.StartRequest{
 		Requester: workflow.Requester{
-			Name:     "a",
-			Username: "b",
-			Email:    "c",
+			Name:     "Blair Strang",
+			Username: "admstrangb",
+			Email:    "blair.strang@auspost.com.au",
 		},
 		Source: workflow.Source{
-			Description: "",
-			DetailsURI: "",
+			Description: "Deploy a new version 3.2 with amazing features",
+			DetailsURI: "https://gitlab.btr.place/platform/keymaster",
 		},
 		Target: workflow.Target{
-			Name: "fred",
+			EnvironmentName: "aptsc-digitalid-tools-02",
+			EnvironmentDiscoveryURI: "TBD",
 		},
 		Policy: workflowPolicy,
 	})

@@ -43,8 +43,8 @@ type Source struct {
 }
 
 type Target struct {
-	Name string `json:"name"`
-	// Target discovery URI?
+	EnvironmentName string `json:"environment_name"`
+	EnvironmentDiscoveryURI string `json:"environment_discovery_uri"`
 }
 
 type Policy struct {
