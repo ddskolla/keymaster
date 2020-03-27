@@ -6,6 +6,7 @@ require (
 	github.com/aws/aws-lambda-go v1.15.0
 	github.com/aws/aws-sdk-go v1.29.21
 	github.com/davecgh/go-spew v1.1.1
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/ghodss/yaml v1.0.0
 	github.com/jonboulle/clockwork v0.1.0
 	github.com/pkg/errors v0.9.1
