@@ -14,6 +14,24 @@ type Config struct {
 	AccessControl AccessControlConfig `json:"access_control"`
 }
 
+func (c *Config) FindCredentialByName(name string) *CredentialsConfig {
+	for _, i := range c.Credentials {
+		if i.Name == name {
+			return &i
+		}
+	}
+	return nil
+}
+
+func (c *Config) FindRoleByName(name string) *RoleConfig {
+	for _, i := range c.Roles {
+		if i.Name == name {
+			return &i
+		}
+	}
+	return nil
+}
+
 type ConfigPublic struct {
 	Name     string         `json:"name"`
 	Idp      []IdpConfig    `json:"idp"`

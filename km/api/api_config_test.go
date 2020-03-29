@@ -150,6 +150,43 @@ func TestLoadSampleConfigs(t *testing.T) {
 	assert.Equal(t, expected, result)
 }
 
+func TestConfig_FindCredentialByName(t *testing.T) {
+	config := Config{
+		Credentials: []CredentialsConfig{
+			{
+				Name: "ssh-all",
+				Type: "ssh_ca",
+				Config: &CredentialsConfigSSH{
+					CAKey:      "s3://my-bucket/sshca.key",
+					Principals: []string{"$idpuser", "core", "ec2-user"},
+				},
+			},
+		},
+	}
+	credConfig := config.FindCredentialByName("ssh-all")
+	assert.NotNil(t, credConfig)
+
+	assert.Nil(t, config.FindCredentialByName("does-not-exist"))
+}
+
+func TestConfig_FindRoleByName(t *testing.T) {
+	config := Config{
+		Roles: []RoleConfig{
+			{
+				Name: "developer",
+				Credentials: []string{"ssh-jumpbox", "kube", "aws-ro"},
+				Workflow: "developer",
+				ValidForSeconds: 7200,
+			},
+		},
+	}
+	credConfig := config.FindRoleByName("developer")
+	assert.NotNil(t, credConfig)
+
+	assert.Nil(t, config.FindCredentialByName("does-not-exist"))
+}
+
+
 func TestIdpConfig_UnmarshalJSON(t *testing.T) {
 	testCases := map[string]IdpConfig{
 		"t1": {
