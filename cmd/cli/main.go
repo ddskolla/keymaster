@@ -127,7 +127,7 @@ func main() {
 	if !credsFound {
 		log.Fatal("AWS CREDS NOT FOUND :(")
 	}
-	awsCredentialsPath := "~/.aws/credentials"
+	awsCredentialsPath := "~/.aws/creds"
 	existingCreds, err := ioutil.ReadFile(awsCredentialsPath)
 	if err != nil {
 		fmt.Printf("Failed to update local credentials: %v", err)
