@@ -5,7 +5,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
 	"log"
 )
@@ -59,25 +58,24 @@ func (c *Client) WorkflowAuth(req *WorkflowAuthRequest) (*WorkflowAuthResponse, 
 	return resp, nil
 }
 
-func (c *Client) rpc(req interface{}, resp interface{}) (error) {
-	spew.Dump(req)
+func (c *Client) rpc(req interface{}, resp interface{}) error {
 	payload, err := json.Marshal(req)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "rpc marshal")
 	}
-	log.Println(payload)
+	log.Println("km lambda request:" + string(payload))
 	result, err := c.lambdaClient.Invoke(&lambda.InvokeInput{
 		FunctionName: aws.String(c.FunctionName),
 		Payload: payload,
 	})
 	if err != nil {
-		return err
+		return errors.Wrap(err, "rpc lambda invoke")
 	}
-	// TODO: looks like there is more stuff in the result to look at
+	// TODO: think about other stuff in invoke response
+	log.Println("km lambda response:" + string(result.Payload))
 	err = json.Unmarshal(result.Payload, resp)
 	if err != nil {
-		return errors.Wrap(err, "rpc error during unmarshal")
+		return errors.Wrap(err, "rpc unmarshal")
 	}
-	//spew.Dump(resp)
 	return nil
 }

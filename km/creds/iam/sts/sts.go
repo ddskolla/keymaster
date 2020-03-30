@@ -60,6 +60,6 @@ aws_session_token = %s
 	)
 	// TODO: return typed credentials and let the client sort out
 	return map[string]string{
-		"~/.aws/config": awsCredentials,
+		"~/.aws/credentials": awsCredentials,
 	}, nil
 }

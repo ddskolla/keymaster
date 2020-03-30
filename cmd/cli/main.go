@@ -6,13 +6,16 @@ import (
 	"github.com/bsycorp/keymaster/km/api"
 	"github.com/bsycorp/keymaster/km/workflow"
 	"github.com/davecgh/go-spew/spew"
+	"io/ioutil"
 	"log"
 	"os"
 	"runtime"
+	"gopkg.in/ini.v1"
 	"time"
 )
 
 func main() {
+
 	// create km directory
 	kmDirectory := fmt.Sprintf("%s/.km", UserHomeDir())
 	if err := os.MkdirAll(kmDirectory, 0700); err != nil {
@@ -23,19 +26,19 @@ func main() {
 
 	// First, get the config
 	target := "arn:aws:lambda:ap-southeast-2:062921715532:function:km2"
-	km := api.NewClient(target)
+	kmApi := api.NewClient(target)
 	configReq := new(api.ConfigRequest)
-	config, err := km.GetConfig(configReq)
+	config, err := kmApi.GetConfig(configReq)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Now start workflow to get nonce
-	// kmWorkflowStartResponse, err := km.WorkflowStart(&api.WorkflowStartRequest{})
-	_, err = km.WorkflowStart(&api.WorkflowStartRequest{})
+	kmWorkflowStartResponse, err := kmApi.WorkflowStart(&api.WorkflowStartRequest{})
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("Started workflow with km api")
 
 	// Get the right policy
 	workflowPolicyName := "deploy_with_approval"
@@ -62,7 +65,7 @@ func main() {
 	startResult, err := workflowApi.Start(context.Background(), &workflow.StartRequest{
 		Requester: workflow.Requester{
 			Name:     "Blair Strang",
-			Username: "admstrangb",
+			Username: "strangb",
 			Email:    "blair.strang@auspost.com.au",
 		},
 		Source: workflow.Source{
@@ -83,7 +86,11 @@ func main() {
 
 	// Now fix up the workflow URL
 	fixedWorkflowUrl := "https://workflow.int.btr.place/workflow/" + startResult.WorkflowId
-	log.Printf("CLICK THIS LINK: %s", fixedWorkflowUrl)
+	log.Printf("------------------------------------------------------------------")
+	log.Printf("******************************************************************")
+	log.Printf("APPROVAL URL: %s", fixedWorkflowUrl)
+	log.Printf("******************************************************************")
+	log.Printf("------------------------------------------------------------------")
 
 	// Poll for assertions
 	for {
@@ -104,7 +111,39 @@ func main() {
 	}
 	log.Println("GOT ASSERTIONS")
 
-	// Now post these back to the km api
+	creds, err := kmApi.WorkflowAuth(&api.WorkflowAuthRequest{
+		Username: "gitlab",
+		Role:     "deployment",
+		Nonce:    kmWorkflowStartResponse.Nonce,
+		// SAML assertions go here
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("GOT CREDENTIALS...")
+
+	// Temporary hack
+	localAwsCreds, credsFound := creds.Credentials["~/.aws/credentials"];
+	if !credsFound {
+		log.Fatal("AWS CREDS NOT FOUND :(")
+	}
+	awsCredentialsPath := "~/.aws/credentials"
+	existingCreds, err := ioutil.ReadFile(awsCredentialsPath)
+	if err != nil {
+		fmt.Printf("Failed to update local credentials: %v", err)
+	} else {
+		log.Printf("Found existing credentials file, appending..")
+		awsCredentialsIni, err := ini.Load(existingCreds, localAwsCreds)
+		if err != nil {
+			fmt.Printf("Failed to read existing local credentials: %v", err)
+		} else {
+			err = awsCredentialsIni.SaveTo(awsCredentialsPath)
+			if err != nil {
+				fmt.Printf("Failed to update local credentials: %v", err)
+			}
+		}
+	}
+
 }
 
 func UserHomeDir() string {

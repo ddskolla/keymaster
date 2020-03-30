@@ -1,4 +1,4 @@
-name: fooproject_nonprod
+name: nonprod
 idp:
   - name: nonprod
     type: saml
@@ -17,11 +17,12 @@ roles:
     workflow: developer
     valid_for_seconds: 7200
   - name: deployment
-    credentials: [kube, aws-admin]
-    workflow: deploy_with_identify_and_approval
+    credentials: [kube-admin, aws-admin]
+    workflow: deploy_with_approval
+    valid_for_seconds: 3600
     credential_delivery:
       # KMS alias or ARN
-      kms_wrap_with: arn:aws:kms:ap-southeast-2:062921715532:key/95a6a059-8281-4280-8500-caf8cc217367
+      kms_wrap_with: arn:aws:kms:ap-southeast-2:062921715599:key/95a6a059-8281-4280-8500-caf8cc217367
 workflow:
   base_url: https://workflow.bsy.place/1/
   policies:
@@ -72,12 +73,12 @@ credentials:
     config:
       # Can be role ARN or role name, e.g. ARN of ReadOnly
       # role in an account that km can assume-role to.
-      target_role: arn:aws:iam::062921715666:role/ReadOnly
+      target_role: arn:aws:iam::062921715699:role/ReadOnly
   - name: aws-admin
     type: iam_assume_role
     config:
       # Can be role ARN or role name, if only name is given the
       # role will be looked up in the target account.
-      target_role: Administrator
+      target_role: iam.amazonaws.com/role=arn:aws:iam::218296299700:role/test_env_admin
 access_control:
   whitelist_cidrs: ["192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"]

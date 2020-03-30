@@ -38,7 +38,7 @@ func TestLoadSampleConfigs(t *testing.T) {
 			{
 				Name: "deployment",
 				Credentials: []string{"kube", "aws-admin"},
-				Workflow: "deploy_with_identify_and_approval",
+				Workflow: "deploy_with_approval",
 				CredentialDelivery: RoleCredentialDeliveryConfig{
 					KmsWrapWith: "arn:aws:kms:ap-southeast-2:062921715532:key/95a6a059-8281-4280-8500-caf8cc217367",
 				},
