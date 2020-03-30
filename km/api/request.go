@@ -37,13 +37,18 @@ type WorkflowStartRequest struct {
 }
 
 type WorkflowStartResponse struct {
+	Nonce string `json:"nonce"`
 }
 
 type WorkflowAuthRequest struct {
+	Username string `json:"username"`
+	Role string `json:"role"`
+	Nonce string `json:"nonce"`
+	// TODO: SAML assertions
 }
 
 type WorkflowAuthResponse struct {
-	Credentials map[string][]byte `json:"result"`
+	Credentials map[string]string `json:"credentials"`
 }
 
 func (c *Request) UnmarshalJSON(data []byte) error {
@@ -78,4 +83,3 @@ func (c *Request) UnmarshalJSON(data []byte) error {
 	c.Payload = payload
 	return nil
 }
-

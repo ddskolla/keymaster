@@ -29,7 +29,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//log.Println(config)
+
+	// Now start workflow to get nonce
+	// kmWorkflowStartResponse, err := km.WorkflowStart(&api.WorkflowStartRequest{})
+	_, err = km.WorkflowStart(&api.WorkflowStartRequest{})
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Get the right policy
 	workflowPolicyName := "deploy_with_approval"
@@ -61,10 +67,10 @@ func main() {
 		},
 		Source: workflow.Source{
 			Description: "Deploy a new version 3.2 with amazing features",
-			DetailsURI: "https://gitlab.btr.place/platform/keymaster",
+			DetailsURI: "https://gitlab.com/platform/keymaster",
 		},
 		Target: workflow.Target{
-			EnvironmentName: "aptsc-digitalid-tools-02",
+			EnvironmentName: "apxyz-env-02",
 			EnvironmentDiscoveryURI: "TBD",
 		},
 		Policy: workflowPolicy,
@@ -78,8 +84,8 @@ func main() {
 	// Now fix up the workflow URL
 	fixedWorkflowUrl := "https://workflow.int.btr.place/workflow/" + startResult.WorkflowId
 	log.Printf("CLICK THIS LINK: %s", fixedWorkflowUrl)
-	// Now
 
+	// Poll for assertions
 	for {
 		getAssertionsResult, err := workflowApi.GetAssertions(context.Background(), &workflow.GetAssertionsRequest{
 			WorkflowId: startResult.WorkflowId,
@@ -96,10 +102,9 @@ func main() {
 			break
 		}
 	}
-	log.Println("GOT ASSERTIONS!")
+	log.Println("GOT ASSERTIONS")
 
-
-	// TODO: post back to the KM api
+	// Now post these back to the km api
 }
 
 func UserHomeDir() string {

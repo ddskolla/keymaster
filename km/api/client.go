@@ -29,12 +29,8 @@ func NewClient(target string) *Client {
 }
 
 func (c *Client) GetConfig(req *ConfigRequest) (*ConfigResponse, error) {
-	req2 := &Request{
-		Type:    "config",
-		Payload: req,
-	}
 	resp := new(ConfigResponse)
-	err := c.rpc(req2, resp)
+	err := c.rpc(&Request{ Type: "config", Payload: req}, resp)
 	if err != nil {
 		return nil, err
 	}
@@ -46,11 +42,21 @@ func (c *Client) DirectSamlAuth(req *DirectSamlAuthRequest) (*DirectAuthResponse
 }
 
 func (c *Client) WorkflowStart(req *WorkflowStartRequest) (*WorkflowStartResponse, error) {
-	return nil, nil
+	resp := new(WorkflowStartResponse)
+	err := c.rpc(&Request{ Type: "workflow_start", Payload: req}, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *Client) WorkflowAuth(req *WorkflowAuthRequest) (*WorkflowAuthResponse, error) {
-	return nil, nil
+	resp := new(WorkflowAuthResponse)
+	err := c.rpc(&Request{ Type: "workflow_auth", Payload: req}, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *Client) rpc(req interface{}, resp interface{}) (error) {

@@ -8,6 +8,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/ghodss/yaml v1.0.0
+	github.com/google/uuid v1.1.1
 	github.com/jonboulle/clockwork v0.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.4.2
