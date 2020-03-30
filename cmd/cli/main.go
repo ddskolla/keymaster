@@ -6,11 +6,11 @@ import (
 	"github.com/bsycorp/keymaster/km/api"
 	"github.com/bsycorp/keymaster/km/workflow"
 	"github.com/davecgh/go-spew/spew"
+	"gopkg.in/ini.v1"
 	"io/ioutil"
 	"log"
 	"os"
 	"runtime"
-	"gopkg.in/ini.v1"
 	"time"
 )
 
@@ -70,10 +70,10 @@ func main() {
 		},
 		Source: workflow.Source{
 			Description: "Deploy a new version 3.2 with amazing features",
-			DetailsURI: "https://gitlab.com/platform/keymaster",
+			DetailsURI:  "https://gitlab.com/platform/keymaster",
 		},
 		Target: workflow.Target{
-			EnvironmentName: "apxyz-env-02",
+			EnvironmentName:         "apxyz-env-02",
 			EnvironmentDiscoveryURI: "TBD",
 		},
 		Policy: workflowPolicy,
@@ -123,7 +123,7 @@ func main() {
 	log.Printf("GOT CREDENTIALS...")
 
 	// Temporary hack
-	localAwsCreds, credsFound := creds.Credentials["~/.aws/config"];
+	localAwsCreds, credsFound := creds.Credentials["~/.aws/config"]
 	if !credsFound {
 		log.Fatal("AWS CREDS NOT FOUND :(")
 	}
