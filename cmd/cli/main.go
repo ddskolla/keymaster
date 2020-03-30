@@ -123,11 +123,11 @@ func main() {
 	log.Printf("GOT CREDENTIALS...")
 
 	// Temporary hack
-	localAwsCreds, credsFound := creds.Credentials["~/.aws/credentials"];
+	localAwsCreds, credsFound := creds.Credentials["~/.aws/config"];
 	if !credsFound {
 		log.Fatal("AWS CREDS NOT FOUND :(")
 	}
-	awsCredentialsPath := "~/.aws/creds"
+	awsCredentialsPath := "~/.aws/credentials"
 	existingCreds, err := ioutil.ReadFile(awsCredentialsPath)
 	if err != nil {
 		fmt.Printf("Failed to update local credentials: %v", err)
