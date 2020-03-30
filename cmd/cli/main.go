@@ -127,13 +127,13 @@ func main() {
 	if !credsFound {
 		log.Fatal("AWS CREDS NOT FOUND :(")
 	}
-	awsCredentialsPath := "~/.aws/credentials"
+	awsCredentialsPath := UserHomeDir() + "/.aws/credentials"
 	existingCreds, err := ioutil.ReadFile(awsCredentialsPath)
 	if err != nil {
 		fmt.Printf("Failed to update local credentials: %v", err)
 	} else {
 		log.Printf("Found existing credentials file, appending..")
-		awsCredentialsIni, err := ini.Load(existingCreds, localAwsCreds)
+		awsCredentialsIni, err := ini.Load(existingCreds, []byte(localAwsCreds))
 		if err != nil {
 			fmt.Printf("Failed to read existing local credentials: %v", err)
 		} else {
