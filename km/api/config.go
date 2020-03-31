@@ -113,6 +113,10 @@ type WorkflowPolicyConfig struct {
 }
 
 type AccessControlConfig struct {
+	IPOracle IPOracleConfig `json:"ip_oracle"`
+}
+
+type IPOracleConfig struct {
 	WhiteListCidrs []string `json:"whitelist_cidrs"`
 }
 

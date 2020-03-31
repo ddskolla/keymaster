@@ -1,4 +1,4 @@
-package kube
+package creds
 
 import (
 	"crypto"
@@ -23,7 +23,7 @@ const (
 	KeyFileSuffix  = ".key"
 )
 
-type Issuer struct {
+type KubeIssuer struct {
 	CAKeypair     *tls.Certificate
 	CACert        *x509.Certificate
 	CACertEncoded string
@@ -40,8 +40,8 @@ type EncodedUserKeyPair struct {
 	PrivateKeyPEM []byte
 }
 
-func NewIssuer(certPem, keyPem []byte) (*Issuer, error) {
-	issuer := Issuer{}
+func NewKubeIssuer(certPem, keyPem []byte) (*KubeIssuer, error) {
+	issuer := KubeIssuer{}
 	caKeypair, err := tls.X509KeyPair(certPem, keyPem)
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func GenerateSubjectKeyId(pub crypto.PublicKey) ([]byte, error) {
 
 // Generate a signed certificate for the specified CN and OrganizationalUnits. These map to the
 // username and roles/groups in kubernetes.
-func (issuer *Issuer) GenerateUserKeyPair(cn string, orgs []string, validForSeconds int) (*UserKeyPair, error) {
+func (issuer *KubeIssuer) GenerateUserKeyPair(cn string, orgs []string, validForSeconds int) (*UserKeyPair, error) {
 	// Generate an RSA keypair for the user
 	log.Printf("generating rsa keypair for: %s (%v)", cn, orgs)
 	priv, err := rsa.GenerateKey(rand.Reader, RsaKeyBits)

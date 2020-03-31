@@ -1,4 +1,4 @@
-package ssh
+package creds
 
 import (
 	"github.com/jonboulle/clockwork"
@@ -36,7 +36,7 @@ func TestKeyGeneration(t *testing.T) {
 	tm := time.Date(2015, time.April, 1, 16, 20, 0, 0, time.UTC)
 
 	// Create an issuing CA with mocked RNG & time for deterministic keygen
-	sshIssuer := Issuer{
+	sshIssuer := SSHIssuer{
 		Random: rand.New(rand.NewSource(31337)),
 		Clock:  clockwork.NewFakeClockAt(tm),
 	}

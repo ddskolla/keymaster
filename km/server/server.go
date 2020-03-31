@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/bsycorp/keymaster/km/api"
 	"github.com/bsycorp/keymaster/km/creds"
-	"github.com/bsycorp/keymaster/km/creds/u"
 	"github.com/bsycorp/keymaster/km/util"
 	"github.com/ghodss/yaml"
 	"github.com/google/uuid"
@@ -71,15 +70,24 @@ func (s *Server) HandleWorkflowStart(req *api.WorkflowStartRequest) (*api.Workfl
 }
 
 func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.WorkflowAuthResponse, error) {
-	issuer, err := creds.NewFromConfig(req.Role, &s.Config)
+	role := s.Config.FindRoleByName(req.Role)
+	if role == nil {
+		return nil, errors.Errorf("requested role not found: %s", req.Role)
+	}
+	credIssuer, err := creds.NewFromConfig(role, &s.Config)
+
 	if err != nil {
 		return nil, errors.Wrap(err, "during issuer configuration")
 	}
 	// TODO: check SAML assertions here
-	userInfo := u.UserInfo{
-		Username:req.Username,
+
+	userInfo := api.AuthInfo{
+		Environment: s.Config.Name,
+		Role: req.Role,
+		Username: req.Username,
+		ValidFor: role.ValidForSeconds,
 	}
-	issuedCreds, err := issuer.IssueFor(&userInfo)
+	issuedCreds, err := credIssuer.IssueFor(&userInfo)
 	if err != nil {
 		return nil, errors.Wrap(err, "during issuance")
 	}

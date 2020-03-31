@@ -48,7 +48,7 @@ type WorkflowAuthRequest struct {
 }
 
 type WorkflowAuthResponse struct {
-	Credentials map[string]string `json:"credentials"`
+	Credentials []Cred `json:"credentials"`
 }
 
 func (c *Request) UnmarshalJSON(data []byte) error {

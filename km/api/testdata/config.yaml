@@ -81,4 +81,5 @@ credentials:
       # role will be looked up in the target account.
       target_role: arn:aws:iam::218296299700:role/test_env_admin
 access_control:
-  whitelist_cidrs: ["192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"]
+  ip_oracle:
+    whitelist_cidrs: ["192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"]

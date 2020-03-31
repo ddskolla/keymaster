@@ -1,4 +1,4 @@
-package kube
+package creds
 
 import (
 	"crypto/rand"
@@ -48,14 +48,14 @@ func TempFileName(prefix, suffix string) string {
 
 func TestNewIssuer(t *testing.T) {
 	// Good construction
-	issuer, err := NewIssuer(MustLoadFile(CaTestCertFile), MustLoadFile(CaTestCertKey))
+	issuer, err := NewKubeIssuer(MustLoadFile(CaTestCertFile), MustLoadFile(CaTestCertKey))
 	assert.Nil(t, err)
 	assert.NotNil(t, issuer)
 }
 
 func TestCreateUserKey(t *testing.T) {
 	// Create an issuer
-	issuer, err := NewIssuer(MustLoadFile(CaTestCertFile), MustLoadFile(CaTestCertKey))
+	issuer, err := NewKubeIssuer(MustLoadFile(CaTestCertFile), MustLoadFile(CaTestCertKey))
 	assert.Nil(t, err)
 	assert.NotNil(t, issuer)
 
@@ -111,7 +111,7 @@ func TestCreateUserKey(t *testing.T) {
 }
 
 func TestValidUserKey(t *testing.T) {
-	issuer, err := NewIssuer(MustLoadFile(CaTestCertFile), MustLoadFile(CaTestCertKey))
+	issuer, err := NewKubeIssuer(MustLoadFile(CaTestCertFile), MustLoadFile(CaTestCertKey))
 	assert.NotNil(t, issuer)
 	assert.Nil(t, err)
 

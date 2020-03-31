@@ -1,4 +1,4 @@
-package ssh
+package creds
 
 import (
 	"bytes"
@@ -28,12 +28,12 @@ type Credentials struct {
 	PrivateKey  []byte
 }
 
-type Issuer struct {
+type SSHIssuer struct {
 	Random io.Reader
 	Clock  clockwork.Clock
 }
 
-func (issuer *Issuer) GenerateKeyPair(user *UserInfo) (ssh.PublicKey, *rsa.PrivateKey, error) {
+func (issuer *SSHIssuer) GenerateKeyPair(user *UserInfo) (ssh.PublicKey, *rsa.PrivateKey, error) {
 	if user.ValidForSeconds < 0 || user.ValidForSeconds > MaxValidForSeconds {
 		return nil, nil, errors.New("Invalid issuance period")
 	}
@@ -58,7 +58,7 @@ func (issuer *Issuer) GenerateKeyPair(user *UserInfo) (ssh.PublicKey, *rsa.Priva
 	return publicKey, privateKey, nil
 }
 
-func (issuer *Issuer) CreateSignedCertificate(ca ssh.Signer, publicKey ssh.PublicKey, privateKey *rsa.PrivateKey, user *UserInfo, extensions map[string]string, options map[string]string) (*Credentials, error) {
+func (issuer *SSHIssuer) CreateSignedCertificate(ca ssh.Signer, publicKey ssh.PublicKey, privateKey *rsa.PrivateKey, user *UserInfo, extensions map[string]string, options map[string]string) (*Credentials, error) {
 	// Create a signed SSH certificate for the user
 	// As per: https://www.ietf.org/mail-archive/web/secsh/current/msg00327.html
 	now := uint64(issuer.Clock.Now().Unix())

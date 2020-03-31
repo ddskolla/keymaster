@@ -104,9 +104,10 @@ func main() {
 		if getAssertionsResult.Status == "CREATED" {
 			log.Println("WATING FOR APPROVAL")
 			time.Sleep(5 * time.Second)
-		} else {
-			spew.Dump(getAssertionsResult)
+		} else if getAssertionsResult.Status == "COMPLETED" {
 			break
+		} else {
+			log.Fatal("unexpected assertions result status:", getAssertionsResult.Status)
 		}
 	}
 	log.Println("GOT ASSERTIONS")
@@ -122,11 +123,37 @@ func main() {
 	}
 	log.Printf("GOT CREDENTIALS...")
 
-	// Temporary hack
-	localAwsCreds, credsFound := creds.Credentials["~/.aws/config"]
-	if !credsFound {
-		log.Fatal("AWS CREDS NOT FOUND :(")
+	var iamCred *api.Cred
+	for _, cred := range creds.Credentials {
+		if cred.Type == "iam" {
+			iamCred = &cred
+			break
+		}
 	}
+	if iamCred == nil {
+		log.Fatal("Got creds but no IAM cred?")
+	}
+	iamCredValue, ok := iamCred.Value.(*api.IAMCred)
+	if !ok {
+		log.Fatal("oops IAM cred is wrong type?")
+	}
+
+	awsCredsFmt := `[%s]
+aws_access_key_id = %s
+aws_secret_access_key = %s
+aws_session_token = %s
+# Keymaster issued, expires: %s
+`
+	exp := time.Unix(iamCred.Expiry, 0)
+	localAwsCreds := fmt.Sprintf(
+		awsCredsFmt,
+		iamCredValue.ProfileName,
+		iamCredValue.AccessKeyId,
+		iamCredValue.SecretAccessKey,
+		iamCredValue.SessionToken,
+		exp,
+	)
+
 	awsCredentialsPath := UserHomeDir() + "/.aws/credentials"
 	existingCreds, err := ioutil.ReadFile(awsCredentialsPath)
 	if err != nil {

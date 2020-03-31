@@ -19,6 +19,7 @@ roles:
   - name: deployment
     credentials: [kube, aws-admin]
     workflow: deploy_with_approval
+    valid_for_seconds: 3600
     credential_delivery:
       # KMS alias or ARN
       kms_wrap_with: arn:aws:kms:ap-southeast-2:062921715532:key/95a6a059-8281-4280-8500-caf8cc217367
@@ -85,4 +86,5 @@ credentials:
       # role will be looked up in the target account.
       target_role: Administrator
 access_control:
-  whitelist_cidrs: ["192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"]
+  ip_oracle:
+    whitelist_cidrs: ["192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"]

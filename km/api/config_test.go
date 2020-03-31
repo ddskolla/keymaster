@@ -39,6 +39,7 @@ func TestLoadSampleConfigs(t *testing.T) {
 				Name: "deployment",
 				Credentials: []string{"kube", "aws-admin"},
 				Workflow: "deploy_with_approval",
+				ValidForSeconds: 3600,
 				CredentialDelivery: RoleCredentialDeliveryConfig{
 					KmsWrapWith: "arn:aws:kms:ap-southeast-2:062921715532:key/95a6a059-8281-4280-8500-caf8cc217367",
 				},
@@ -136,11 +137,11 @@ func TestLoadSampleConfigs(t *testing.T) {
 				},
 			},
 		},
-		AccessControl: AccessControlConfig{ WhiteListCidrs: []string{
-			"192.168.0.0/24",
-			"172.16.0.0/12",
-			"10.0.0.0/8",
-		} },
+		AccessControl: AccessControlConfig{
+			IPOracle: IPOracleConfig{
+				WhiteListCidrs: []string{"192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8" },
+			},
+		},
 	}
 	data, err := ioutil.ReadFile("./testdata/example_api_config.yaml")
 	assert.NoError(t, err)
