@@ -25,7 +25,9 @@ func main() {
 	// Draft workflow
 
 	// First, get the config
-	target := "arn:aws:lambda:ap-southeast-2:062921715532:function:km2"
+	// target := "arn:aws:lambda:ap-southeast-2:062921715532:function:km2"
+	//target := "arn:aws:apigateway:ap-southeast-2:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-2:218296299700:function:km2/invocations"
+	target := "arn:aws:lambda:ap-southeast-2:218296299700:function:km-tools-bls-01"
 	kmApi := api.NewClient(target)
 	configReq := new(api.ConfigRequest)
 	config, err := kmApi.GetConfig(configReq)
@@ -46,6 +48,7 @@ func main() {
 	if configWorkflowPolicy == nil {
 		log.Fatalf("workflow policy %s not found in config", workflowPolicyName)
 	}
+	log.Println(configWorkflowPolicy)
 	workflowPolicy := workflow.Policy{ // Blech
 		Name:                configWorkflowPolicy.Name,
 		IdpName:             configWorkflowPolicy.IdpName,

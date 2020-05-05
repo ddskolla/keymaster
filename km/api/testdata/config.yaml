@@ -1,4 +1,4 @@
-name: nonprod
+name: did-npe-1
 idp:
   - name: nonprod
     type: saml
@@ -8,14 +8,6 @@ idp:
       # Cert can be specified as s3:// file:// or raw data
       certificate: pem_block
 roles:
-  - name: cloudengineer
-    credentials: [ssh-all, kube, aws-admin]
-    workflow: cloudengineer
-    valid_for_seconds: 7200
-  - name: developer
-    credentials: [ssh-jumpbox, kube, aws-ro]
-    workflow: developer
-    valid_for_seconds: 7200
   - name: deployment
     credentials: [kube-admin, aws-admin]
     workflow: deploy_with_approval
@@ -32,7 +24,8 @@ workflow:
     - name: deploy_with_approval
       requester_can_approve: false
       approver_roles:
-        adfs_role_approver: 1
+        gg_digitalid_technical_approver: 1
+        gg_digitalid_business_approver: 1
     - name: deploy_with_identify_and_approval
       requester_can_approve: false
       identify_roles:

@@ -37,6 +37,8 @@ func (s *Server) Configure(config string) error {
 			return err
 		}
 	}
+
+	tmpConfig.SetDefaults()
 	s.Config = tmpConfig
 	return nil
 }

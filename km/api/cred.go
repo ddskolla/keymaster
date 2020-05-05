@@ -65,3 +65,4 @@ func (c *Cred) UnmarshalJSON(data []byte) error {
 	c.Value = v
 	return nil
 }
+

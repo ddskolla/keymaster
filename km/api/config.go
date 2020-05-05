@@ -14,6 +14,19 @@ type Config struct {
 	AccessControl AccessControlConfig `json:"access_control"`
 }
 
+func (c *Config) SetDefaults() {
+	// If there's no IDP name specified in a policy we will
+	// just use the first IDP.
+	policies := c.Workflow.Policies
+	if len(c.Idp) > 0 {
+		for i := range policies {
+			if policies[i].IdpName == "" {
+				policies[i].IdpName = c.Idp[0].Name
+			}
+		}
+	}
+}
+
 func (c *Config) FindCredentialByName(name string) *CredentialsConfig {
 	for _, i := range c.Credentials {
 		if i.Name == name {

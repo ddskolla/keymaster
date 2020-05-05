@@ -81,8 +81,8 @@ func TestKeyGeneration(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Contains(t, string(certDump), "Type: ssh-rsa-cert-v01@openssh.com user certificate")
 	assert.Contains(t, string(certDump), "Public key: RSA-CERT SHA256:" /* Skip random-ish key */)
+	assert.Contains(t, string(certDump), "Signing CA: RSA SHA256:ZqBXZJK631SyxVjXNL7mOWsCDFh+J+9sE7qrOfeAsF4")
 	expected2 := `
-        Signing CA: RSA SHA256:ZqBXZJK631SyxVjXNL7mOWsCDFh+J+9sE7qrOfeAsF4
         Key ID: "user_fred"
         Serial: 0
         Valid: from 2015-04-01T16:20:00 to 2015-04-02T00:20:00

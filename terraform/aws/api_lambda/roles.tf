@@ -6,16 +6,18 @@ data "aws_iam_policy_document" "lambda_assume_role" {
       type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
     }
-    effect 	  = "Allow"
+    effect = "Allow"
   }
 }
 
 data "aws_iam_policy_document" "km" {
   statement {
+    // TODO: read-only access
     actions = ["s3:*"]
     resources = [
-      "arn:aws:s3:::km2-test/*",
-      "arn:aws:s3:::km2-test"
+      // TODO: we need to maintain a local list here...
+      "${aws_s3_bucket.km_config[0].arn}",
+      "${aws_s3_bucket.km_config[0].arn}/*",
     ]
     effect = "Allow"
   }
@@ -25,27 +27,34 @@ data "aws_iam_policy_document" "km" {
       "logs:CreateLogStream",
       "logs:CreateLogGroup"
     ]
-    resources = [ "arn:aws:logs:*:*:*" ]
-    effect = "Allow"
+    resources = ["arn:aws:logs:*:*:*"]
+    effect    = "Allow"
+  }
+  statement {
+    actions = [
+      "sts:AssumeRole",
+    ]
+    effect    = "Allow"
+    resources = var.target_role_arns
   }
 }
 
 resource "aws_iam_role" "km" {
-  // TODO: name vars
-  name = "km"
-  description = "keymaster lambda role"
+  count              = var.lambda_role_arn == "" ? 1 : 0
+  name               = "km-${var.env_label}"
+  description        = "keymaster issuing lambda role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
+  tags               = merge({}, var.resource_tags)
 }
 
 resource "aws_iam_policy" "km" {
-  // TODO: name vars
-  name = "km"
+  name        = "km-${var.env_label}"
   description = "keymaster iam policy"
-  policy = data.aws_iam_policy_document.km.json
+  policy      = data.aws_iam_policy_document.km.json
 }
 
-
 resource "aws_iam_role_policy_attachment" "km" {
-  role       = aws_iam_role.km.name
+  count      = var.lambda_role_arn == "" ? 1 : 0
+  role       = aws_iam_role.km[0].name
   policy_arn = aws_iam_policy.km.arn
 }
