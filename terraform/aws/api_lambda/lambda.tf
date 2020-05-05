@@ -30,14 +30,7 @@ resource "aws_lambda_function" "km" {
   tags                           = merge({}, var.resource_tags)
 }
 
-resource "null_resource" "lambda_changed" {
-  triggers = {
-    lambda_modified = aws_lambda_function.km.last_modified
-  }
-}
-
 resource "aws_lambda_permission" "allow_invoke" {
-  depends_on = [null_resource.lambda_changed]
   count         = length(var.client_account_arns)
   statement_id  = "AllowClientExecution-${count.index}"
   action        = "lambda:InvokeFunction"

@@ -1,6 +1,6 @@
 name: nonprod
 idp:
-  - name: nonprod
+  - name: adfs-local
     type: saml
     config:
       issuer: foo_saml_nonprod

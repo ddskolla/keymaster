@@ -76,6 +76,15 @@ type RoleConfig struct {
 	CredentialDelivery RoleCredentialDeliveryConfig `json:"credential_delivery"`
 }
 
+func (c *ConfigPublic) FindRoleByName(name string) *RoleConfig {
+	for _, p := range c.Roles {
+		if p.Name == name {
+			return &p
+		}
+	}
+	return nil
+}
+
 type RoleCredentialDeliveryConfig struct {
 	KmsWrapWith string `json:"kms_wrap_with"`
 }

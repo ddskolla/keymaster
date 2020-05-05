@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"github.com/bsycorp/keymaster/km/api"
 	"github.com/bsycorp/keymaster/km/workflow"
@@ -14,7 +15,10 @@ import (
 	"time"
 )
 
+var roleFlag = flag.String("role", "", "target role")
+
 func main() {
+	flag.Parse()
 
 	// create km directory
 	kmDirectory := fmt.Sprintf("%s/.km", UserHomeDir())
@@ -22,6 +26,9 @@ func main() {
 		log.Println("Failed to create ~/.km directory: ", err)
 	}
 
+	if *roleFlag == "" {
+		log.Fatalln("Required argument role missing (need -role)")
+	}
 	// Draft workflow
 
 	// First, get the config
@@ -30,7 +37,7 @@ func main() {
 	target := "arn:aws:lambda:ap-southeast-2:218296299700:function:km-tools-bls-01"
 	kmApi := api.NewClient(target)
 	configReq := new(api.ConfigRequest)
-	config, err := kmApi.GetConfig(configReq)
+	configResp, err := kmApi.GetConfig(configReq)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,9 +49,13 @@ func main() {
 	}
 	log.Println("Started workflow with km api")
 
-	// Get the right policy
-	workflowPolicyName := "deploy_with_approval"
-	configWorkflowPolicy := config.Config.Workflow.FindPolicyByName(workflowPolicyName)
+	log.Println("Target role for authentication:", *roleFlag)
+	targetRole := configResp.Config.FindRoleByName(*roleFlag)
+	if targetRole == nil {
+		log.Fatalf("Target role #{*roleFlag} not found in config")
+	}
+	workflowPolicyName := targetRole.Workflow
+	configWorkflowPolicy := configResp.Config.Workflow.FindPolicyByName(workflowPolicyName)
 	if configWorkflowPolicy == nil {
 		log.Fatalf("workflow policy %s not found in config", workflowPolicyName)
 	}
@@ -76,7 +87,7 @@ func main() {
 			DetailsURI:  "https://gitlab.com/platform/keymaster",
 		},
 		Target: workflow.Target{
-			EnvironmentName:         "apxyz-env-02",
+			EnvironmentName:         configResp.Config.Name,
 			EnvironmentDiscoveryURI: "TBD",
 		},
 		Policy: workflowPolicy,
