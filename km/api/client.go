@@ -71,10 +71,10 @@ func (c *Client) WorkflowAuth(req *WorkflowAuthRequest) (*WorkflowAuthResponse, 
 
 func (c *Client) isError(resp *lambda.InvokeOutput) error {
 	if resp.FunctionError != nil {
-		return errors.Errorf("function error: %s: payload: %s",
+		return errors.Errorf("function error: %s: response payload: %s",
 			*resp.FunctionError, string(resp.Payload))
 	} else if *resp.StatusCode != 200 {
-		return errors.Errorf("bad status code: %d, payload: %s",
+		return errors.Errorf("bad status code: %d, response payload: %s",
 			*resp.StatusCode, string(resp.Payload))
 	}
 	return nil

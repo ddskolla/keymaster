@@ -44,6 +44,12 @@ func main() {
 	kmApi := api.NewClient(target)
 	kmApi.Debug = debugEnabled
 
+	discoveryReq := new(api.DiscoveryRequest)
+	_, err := kmApi.Discovery(discoveryReq)
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "error calling kmApi.Discovery"))
+	}
+
 	configReq := new(api.ConfigRequest)
 	configResp, err := kmApi.GetConfig(configReq)
 	if err != nil {
@@ -129,6 +135,8 @@ func main() {
 			time.Sleep(5 * time.Second)
 		} else if getAssertionsResult.Status == "COMPLETED" {
 			break
+		} else if getAssertionsResult.Status == "REJECTED" {
+			log.Fatal("Your change request was REJECTED by a workflow approver. Exiting.")
 		} else {
 			log.Fatal("unexpected assertions result status:", getAssertionsResult.Status)
 		}

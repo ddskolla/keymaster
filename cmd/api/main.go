@@ -20,6 +20,8 @@ func Handler(ctx context.Context, req api.Request) (interface{}, error) {
 		return nil, nerr
 	}
 	switch r := req.Payload.(type) {
+	case *api.DiscoveryRequest:
+		return km.HandleDiscovery(r)
 	case *api.ConfigRequest:
 		return km.HandleConfig(r)
 	case *api.DirectSamlAuthRequest:

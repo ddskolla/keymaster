@@ -43,6 +43,11 @@ func (s *Server) Configure(config string) error {
 	return nil
 }
 
+func (s *Server) HandleDiscovery(req *api.DiscoveryRequest) (*api.DiscoveryResponse, error) {
+	var resp api.DiscoveryResponse
+	return &resp, nil
+}
+
 func (s *Server) HandleConfig(req *api.ConfigRequest) (*api.ConfigResponse, error) {
 	// Copy the public parts of our configuration.
 	var resp api.ConfigResponse
