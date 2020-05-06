@@ -10,6 +10,10 @@ type Request struct {
 	Payload interface{} `json:"payload"`
 }
 
+type DiscoveryRequest struct {}
+
+type DiscoveryResponse struct {}
+
 type ConfigRequest struct {
 }
 
@@ -63,6 +67,8 @@ func (c *Request) UnmarshalJSON(data []byte) error {
 	c.Type = t.Type
 	var payload interface{}
 	switch c.Type {
+	case "discovery":
+		payload = &DiscoveryRequest{}
 	case "config":
 		payload = &ConfigRequest{}
 	case "direct_saml_auth":

@@ -29,6 +29,15 @@ func NewClient(target string) *Client {
 	return c
 }
 
+func (c *Client) Discovery(req *DiscoveryRequest) (*DiscoveryResponse, error) {
+	resp := new(DiscoveryResponse)
+	err := c.rpc(&Request{ Type: "discovery", Payload: req}, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *Client) GetConfig(req *ConfigRequest) (*ConfigResponse, error) {
 	resp := new(ConfigResponse)
 	err := c.rpc(&Request{ Type: "config", Payload: req}, resp)
@@ -61,7 +70,6 @@ func (c *Client) WorkflowAuth(req *WorkflowAuthRequest) (*WorkflowAuthResponse, 
 }
 
 func (c *Client) isError(resp *lambda.InvokeOutput) error {
-	// TODO: sometimes the response just "looks like" an error?
 	if resp.FunctionError != nil {
 		return errors.Errorf("function error: %s: payload: %s",
 			*resp.FunctionError, string(resp.Payload))
@@ -69,7 +77,6 @@ func (c *Client) isError(resp *lambda.InvokeOutput) error {
 		return errors.Errorf("bad status code: %d, payload: %s",
 			*resp.StatusCode, string(resp.Payload))
 	}
-
 	return nil
 }
 

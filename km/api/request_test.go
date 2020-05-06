@@ -8,6 +8,10 @@ import (
 
 func TestRequest_UnmarshalJSON(t *testing.T) {
 	testCases := map[string]Request{
+		"discovery": {
+			Type: "discovery",
+			Payload: &DiscoveryRequest{},
+		},
 		"config": {
 			Type: "config",
 			Payload: &ConfigRequest{},
