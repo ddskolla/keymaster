@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/bsycorp/keymaster/km/api"
 	"github.com/bsycorp/keymaster/km/workflow"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
 	"gopkg.in/ini.v1"
 	"io/ioutil"
@@ -17,8 +16,8 @@ import (
 )
 
 var roleFlag = flag.String("role", "", "target role")
-var debugFlag = flag.String("debug", "", "enable debugging")
-var debugEnabled = false
+var debugFlag = flag.Int("debug", 0, "enable debugging")
+var debugLevel = 0
 
 func main() {
 	flag.Parse()
@@ -32,9 +31,7 @@ func main() {
 	if *roleFlag == "" {
 		log.Fatalln("Required argument role missing (need -role)")
 	}
-	if *debugFlag != "" || os.Getenv("KM_DEBUG") != "" {
-		debugEnabled = true
-	}
+	debugLevel = *debugFlag
 	// Draft workflow
 
 	// First, get the config
@@ -42,7 +39,7 @@ func main() {
 	//target := "arn:aws:apigateway:ap-southeast-2:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-2:218296299700:function:km2/invocations"
 	target := "arn:aws:lambda:ap-southeast-2:218296299700:function:km-tools-bls-01"
 	kmApi := api.NewClient(target)
-	kmApi.Debug = debugEnabled
+	kmApi.Debug = debugLevel
 
 	discoveryReq := new(api.DiscoveryRequest)
 	_, err := kmApi.Discovery(discoveryReq)
@@ -73,8 +70,7 @@ func main() {
 	if configWorkflowPolicy == nil {
 		log.Fatalf("workflow policy %s not found in config", workflowPolicyName)
 	}
-	log.Println(configWorkflowPolicy)
-	workflowPolicy := workflow.Policy{ // Blech
+	workflowPolicy := workflow.Policy{
 		Name:                configWorkflowPolicy.Name,
 		IdpName:             configWorkflowPolicy.IdpName,
 		RequesterCanApprove: configWorkflowPolicy.RequesterCanApprove,
@@ -88,9 +84,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	workflowApi.Debug = debugLevel
 
 	// And start a workflow session
-	startResult, err := workflowApi.Start(context.Background(), &workflow.StartRequest{
+	startResult, err := workflowApi.Create(context.Background(), &workflow.CreateRequest{
+		IdpNonce: kmWorkflowStartResponse.IdpNonce,
 		Requester: workflow.Requester{
 			Name:     "Blair Strang",
 			Username: "strangb",
@@ -109,8 +107,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	spew.Dump(startResult)
 
 	// Now fix up the workflow URL
 	fixedWorkflowUrl := "https://workflow.int.btr.place/workflow/" + startResult.WorkflowId
@@ -144,10 +140,11 @@ func main() {
 	log.Printf("got: %d assertions from workflow", len(getAssertionsResult.Assertions))
 
 	creds, err := kmApi.WorkflowAuth(&api.WorkflowAuthRequest{
-		Username: "gitlab",
+		Username: "gitlab", // TODO
 		Role:     "deployment",
-		Nonce:    kmWorkflowStartResponse.Nonce,
-		// Assertions: getAssertionsResult.Assertions
+		IdpNonce:    kmWorkflowStartResponse.IdpNonce,
+		IssuingNonce: kmWorkflowStartResponse.IssuingNonce,
+		Assertions: getAssertionsResult.Assertions,
 	})
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error calling kmApi.WorkflowAuth"))

@@ -71,8 +71,10 @@ func (s *Server) HandleDirectOidcAuth(req *api.DirectOidcAuthRequest) (*api.Dire
 func (s *Server) HandleWorkflowStart(req *api.WorkflowStartRequest) (*api.WorkflowStartResponse, error) {
 	// NOTE: this will be a JWT in future to allow stateless operation.
 	uu := uuid.New()
+	uu2 := uuid.New()
 	return &api.WorkflowStartResponse{
-		Nonce: uu.String(),
+		IssuingNonce: uu.String(),
+		IdpNonce:     uu2.String(),
 	}, nil
 }
 
@@ -83,16 +85,19 @@ func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.Workflow
 	}
 	credIssuer, err := creds.NewFromConfig(role, &s.Config)
 
+	// TODO: check SAML assertions here
+	// TODO: check Nonce here
+	// TODO: ensure verification of IDP nonce
+
 	if err != nil {
 		return nil, errors.Wrap(err, "during issuer configuration")
 	}
-	// TODO: check SAML assertions here
 
 	userInfo := api.AuthInfo{
 		Environment: s.Config.Name,
-		Role: req.Role,
-		Username: req.Username,
-		ValidFor: role.ValidForSeconds,
+		Role:        req.Role,
+		Username:    req.Username,
+		ValidFor:    role.ValidForSeconds,
 	}
 	issuedCreds, err := credIssuer.IssueFor(&userInfo)
 	if err != nil {

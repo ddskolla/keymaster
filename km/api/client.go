@@ -16,7 +16,7 @@ type Client struct {
 	//    * Partial ARN - 123456789012:function:my-function.
 	FunctionName string
 	lambdaClient *lambda.Lambda
-	Debug bool
+	Debug int
 }
 
 func NewClient(target string) *Client {
@@ -81,7 +81,7 @@ func (c *Client) isError(resp *lambda.InvokeOutput) error {
 }
 
 func (c *Client) rpc(req interface{}, resp interface{}) error {
-	if c.Debug {
+	if c.Debug > 0 {
 		log.Println("rpc request: ", spew.Sdump(req))
 	}
 	payload, err := json.Marshal(req)
@@ -100,12 +100,12 @@ func (c *Client) rpc(req interface{}, resp interface{}) error {
 	}
 	err = json.Unmarshal(result.Payload, resp)
 	if err != nil {
-		if c.Debug {
+		if c.Debug > 0 {
 			log.Println("rpc raw response:" + string(result.Payload))
 		}
 		return errors.Wrap(err, "rpc unmarshal")
 	}
-	if c.Debug {
+	if c.Debug > 0 {
 		log.Println("rpc response:", spew.Sdump(resp))
 	}
 	return nil

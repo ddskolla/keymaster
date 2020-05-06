@@ -41,14 +41,16 @@ type WorkflowStartRequest struct {
 }
 
 type WorkflowStartResponse struct {
-	Nonce string `json:"nonce"`
+	IssuingNonce string `json:"issuing_nonce"`
+	IdpNonce string `json:"idp_nonce"`
 }
 
 type WorkflowAuthRequest struct {
-	Username string `json:"username"`
+	Username string `json:"username"` // TODO: remove
 	Role string `json:"role"`
-	Nonce string `json:"nonce"`
-	// TODO: SAML assertions
+	IssuingNonce string `json:"issuing_nonce"`
+	IdpNonce string `json:"idp_nonce"`
+	Assertions []string `json:"assertions"`
 }
 
 type WorkflowAuthResponse struct {
