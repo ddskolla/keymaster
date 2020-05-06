@@ -7,6 +7,7 @@ import (
 	"github.com/bsycorp/keymaster/km/api"
 	"github.com/bsycorp/keymaster/km/workflow"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/pkg/errors"
 	"gopkg.in/ini.v1"
 	"io/ioutil"
 	"log"
@@ -36,16 +37,18 @@ func main() {
 	//target := "arn:aws:apigateway:ap-southeast-2:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-2:218296299700:function:km2/invocations"
 	target := "arn:aws:lambda:ap-southeast-2:218296299700:function:km-tools-bls-01"
 	kmApi := api.NewClient(target)
+	kmApi.Debug = true
+
 	configReq := new(api.ConfigRequest)
 	configResp, err := kmApi.GetConfig(configReq)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(errors.Wrap(err, "error calling kmApi.GetConfig"))
 	}
 
 	// Now start workflow to get nonce
 	kmWorkflowStartResponse, err := kmApi.WorkflowStart(&api.WorkflowStartRequest{})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(errors.Wrap(err, "error calling kmApi.WorkflowStart"))
 	}
 	log.Println("Started workflow with km api")
 
@@ -113,7 +116,7 @@ func main() {
 			Nonce:      startResult.Nonce,
 		})
 		if err != nil {
-			log.Println(err)
+			log.Println(errors.Wrap(err, "error calling workflowApi.GetAssertions"))
 		}
 		if getAssertionsResult.Status == "CREATED" {
 			log.Println("WATING FOR APPROVAL")
@@ -124,7 +127,7 @@ func main() {
 			log.Fatal("unexpected assertions result status:", getAssertionsResult.Status)
 		}
 	}
-	log.Println("GOT ASSERTIONS")
+	log.Println("workflow state: COMPLETED")
 
 	creds, err := kmApi.WorkflowAuth(&api.WorkflowAuthRequest{
 		Username: "gitlab",
@@ -133,7 +136,7 @@ func main() {
 		// SAML assertions go here
 	})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(errors.Wrap(err, "error calling kmApi.WorkflowAuth"))
 	}
 	log.Printf("GOT CREDENTIALS...")
 

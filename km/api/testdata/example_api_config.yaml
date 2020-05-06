@@ -1,4 +1,5 @@
 name: fooproject_nonprod
+version: "1.0"
 idp:
   - name: nonprod
     type: saml

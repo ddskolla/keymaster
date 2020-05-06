@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	Name          string              `json:"name"`
+	Version       string              `json:"version"`
 	Idp           []IdpConfig         `json:"idp"`
 	Roles         []RoleConfig        `json:"roles"`
 	Workflow      WorkflowConfig      `json:"workflow"`
@@ -15,6 +16,11 @@ type Config struct {
 }
 
 func (c *Config) SetDefaults() {
+	// We default to version 1.0 if not specified
+	if c.Version == "" {
+		c.Version = "1.0"
+	}
+
 	// If there's no IDP name specified in a policy we will
 	// just use the first IDP.
 	policies := c.Workflow.Policies
@@ -25,6 +31,16 @@ func (c *Config) SetDefaults() {
 			}
 		}
 	}
+}
+
+func (c *Config) Validate() error {
+	if c.Version != "1.0" {
+		return errors.Errorf("unsupported version: %s", c.Version)
+	}
+	// TODO: validate roles
+	// TODO: validate workflows
+	// TODO: etc
+	return nil
 }
 
 func (c *Config) FindCredentialByName(name string) *CredentialsConfig {

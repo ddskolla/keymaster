@@ -1,4 +1,5 @@
 name: nonprod
+version: "1.0"
 idp:
   - name: adfs-local
     type: saml

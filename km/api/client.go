@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
 	"log"
 )
@@ -15,6 +16,7 @@ type Client struct {
 	//    * Partial ARN - 123456789012:function:my-function.
 	FunctionName string
 	lambdaClient *lambda.Lambda
+	Debug bool
 }
 
 func NewClient(target string) *Client {
@@ -58,24 +60,46 @@ func (c *Client) WorkflowAuth(req *WorkflowAuthRequest) (*WorkflowAuthResponse, 
 	return resp, nil
 }
 
+func (c *Client) isError(resp *lambda.InvokeOutput) error {
+	// TODO: sometimes the response just "looks like" an error?
+	if resp.FunctionError != nil {
+		return errors.Errorf("function error: %s: payload: %s",
+			*resp.FunctionError, string(resp.Payload))
+	} else if *resp.StatusCode != 200 {
+		return errors.Errorf("bad status code: %d, payload: %s",
+			*resp.StatusCode, string(resp.Payload))
+	}
+
+	return nil
+}
+
 func (c *Client) rpc(req interface{}, resp interface{}) error {
+	if c.Debug {
+		log.Println("rpc request: ", spew.Sdump(req))
+	}
 	payload, err := json.Marshal(req)
 	if err != nil {
 		return errors.Wrap(err, "rpc marshal")
 	}
-	log.Println("km lambda request:" + string(payload))
 	result, err := c.lambdaClient.Invoke(&lambda.InvokeInput{
 		FunctionName: aws.String(c.FunctionName),
 		Payload: payload,
 	})
 	if err != nil {
-		return errors.Wrap(err, "rpc lambda invoke")
+		return errors.Wrap(err, "rpc invoke")
 	}
-	// TODO: think about other stuff in invoke response
-	log.Println("km lambda response:" + string(result.Payload))
+	if err = c.isError(result); err != nil {
+		return errors.Wrap(err, "rpc error")
+	}
 	err = json.Unmarshal(result.Payload, resp)
 	if err != nil {
+		if c.Debug {
+			log.Println("rpc raw response:" + string(result.Payload))
+		}
 		return errors.Wrap(err, "rpc unmarshal")
+	}
+	if c.Debug {
+		log.Println("rpc response:", spew.Sdump(resp))
 	}
 	return nil
 }
