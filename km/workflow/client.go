@@ -7,7 +7,6 @@ import (
 	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -152,7 +151,8 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "error reading workflow response body")
 	}
-	log.Printf("RESPONSE FROM WORKFLOW: %s", string(body))
+	// TODO: debugging
+	//log.Printf("RESPONSE FROM WORKFLOW: %s", string(body))
 	err = json.Unmarshal(body, v)
 	return resp, err
 }

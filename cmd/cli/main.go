@@ -17,6 +17,8 @@ import (
 )
 
 var roleFlag = flag.String("role", "", "target role")
+var debugFlag = flag.String("debug", "", "enable debugging")
+var debugEnabled = false
 
 func main() {
 	flag.Parse()
@@ -30,6 +32,9 @@ func main() {
 	if *roleFlag == "" {
 		log.Fatalln("Required argument role missing (need -role)")
 	}
+	if *debugFlag != "" || os.Getenv("KM_DEBUG") != "" {
+		debugEnabled = true
+	}
 	// Draft workflow
 
 	// First, get the config
@@ -37,7 +42,7 @@ func main() {
 	//target := "arn:aws:apigateway:ap-southeast-2:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-2:218296299700:function:km2/invocations"
 	target := "arn:aws:lambda:ap-southeast-2:218296299700:function:km-tools-bls-01"
 	kmApi := api.NewClient(target)
-	kmApi.Debug = true
+	kmApi.Debug = debugEnabled
 
 	configReq := new(api.ConfigRequest)
 	configResp, err := kmApi.GetConfig(configReq)
@@ -110,16 +115,17 @@ func main() {
 	log.Printf("------------------------------------------------------------------")
 
 	// Poll for assertions
+	var getAssertionsResult *workflow.GetAssertionsResponse
 	for {
-		getAssertionsResult, err := workflowApi.GetAssertions(context.Background(), &workflow.GetAssertionsRequest{
+		getAssertionsResult, err = workflowApi.GetAssertions(context.Background(), &workflow.GetAssertionsRequest{
 			WorkflowId: startResult.WorkflowId,
 			Nonce:      startResult.Nonce,
 		})
 		if err != nil {
 			log.Println(errors.Wrap(err, "error calling workflowApi.GetAssertions"))
 		}
+		log.Printf("workflow state: %s", getAssertionsResult.Status)
 		if getAssertionsResult.Status == "CREATED" {
-			log.Println("WATING FOR APPROVAL")
 			time.Sleep(5 * time.Second)
 		} else if getAssertionsResult.Status == "COMPLETED" {
 			break
@@ -127,13 +133,13 @@ func main() {
 			log.Fatal("unexpected assertions result status:", getAssertionsResult.Status)
 		}
 	}
-	log.Println("workflow state: COMPLETED")
+	log.Printf("got: %d assertions from workflow", len(getAssertionsResult.Assertions))
 
 	creds, err := kmApi.WorkflowAuth(&api.WorkflowAuthRequest{
 		Username: "gitlab",
 		Role:     "deployment",
 		Nonce:    kmWorkflowStartResponse.Nonce,
-		// SAML assertions go here
+		// Assertions: getAssertionsResult.Assertions
 	})
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error calling kmApi.WorkflowAuth"))
