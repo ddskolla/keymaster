@@ -58,7 +58,7 @@ type Policy struct {
 }
 
 type CreateRequest struct {
-	IdpNonce  string    `json:"nonce"` // TODO: idp_nonce
+	IdpNonce  string    `json:"idp_nonce"`
 	Requester Requester `json:"requester"`
 	Source    Source    `json:"source"`
 	Target    Target    `json:"target"`
@@ -68,9 +68,9 @@ type CreateRequest struct {
 }
 
 type CreateResponse struct {
-	WorkflowId  string `json:"workflow_id"`
-	WorkflowUrl string `json:"workflow_url"`
-	Nonce string `json:"nonce"`
+	WorkflowId    string `json:"workflow_id"`
+	WorkflowUrl   string `json:"workflow_url"`
+	WorkflowNonce string `json:"workflow_nonce"`
 }
 
 type GetDetailsRequest struct {
@@ -82,8 +82,8 @@ type GetDetailsResponse struct {
 }
 
 type GetAssertionsRequest struct {
-	WorkflowId string `json:"workflow_id"`
-	Nonce      string `json:"nonce"`
+	WorkflowId    string `json:"workflow_id"`
+	WorkflowNonce string `json:"workflow_nonce"`
 }
 
 type GetAssertionsResponse struct {

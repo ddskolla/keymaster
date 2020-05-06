@@ -120,8 +120,8 @@ func main() {
 	var getAssertionsResult *workflow.GetAssertionsResponse
 	for {
 		getAssertionsResult, err = workflowApi.GetAssertions(context.Background(), &workflow.GetAssertionsRequest{
-			WorkflowId: startResult.WorkflowId,
-			Nonce:      startResult.Nonce,
+			WorkflowId:    startResult.WorkflowId,
+			WorkflowNonce: startResult.WorkflowNonce,
 		})
 		if err != nil {
 			log.Println(errors.Wrap(err, "error calling workflowApi.GetAssertions"))
@@ -140,11 +140,11 @@ func main() {
 	log.Printf("got: %d assertions from workflow", len(getAssertionsResult.Assertions))
 
 	creds, err := kmApi.WorkflowAuth(&api.WorkflowAuthRequest{
-		Username: "gitlab", // TODO
-		Role:     "deployment",
-		IdpNonce:    kmWorkflowStartResponse.IdpNonce,
+		Username:     "gitlab", // TODO
+		Role:         "deployment",
+		IdpNonce:     kmWorkflowStartResponse.IdpNonce,
 		IssuingNonce: kmWorkflowStartResponse.IssuingNonce,
-		Assertions: getAssertionsResult.Assertions,
+		Assertions:   getAssertionsResult.Assertions,
 	})
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "error calling kmApi.WorkflowAuth"))
