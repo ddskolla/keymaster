@@ -1,8 +1,8 @@
 package saml
 
 import (
+	"github.com/bsycorp/keymaster/km/idp/connector/saml"
 	"github.com/dexidp/dex/connector"
-	"github.com/dexidp/dex/connector/saml"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
