@@ -75,9 +75,12 @@ type IdpConfig struct {
 }
 
 type IdpConfigSaml struct {
-	Issuer      string
-	Audience    string
-	Certificate string
+	Certificate  string `json:"certificate"`
+	Audience     string `json:"audience"`
+	UsernameAttr string `json:"username_attr"`
+	EmailAttr    string `json:"email_attr"`
+	GroupsAttr   string `json:"groups_attr"`
+	RedirectURI  string `json:"redirect_uri"`
 }
 
 type IdpConfigOidc struct {
@@ -133,7 +136,7 @@ type WorkflowConfig struct {
 	Policies []WorkflowPolicyConfig `json:"policies"`
 }
 
-func (wc *WorkflowConfig) FindPolicyByName(name string) (*WorkflowPolicyConfig) {
+func (wc *WorkflowConfig) FindPolicyByName(name string) *WorkflowPolicyConfig {
 	for _, p := range wc.Policies {
 		if p.Name == name {
 			return &p

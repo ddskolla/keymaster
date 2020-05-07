@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"github.com/bsycorp/keymaster/km/api"
 	"github.com/bsycorp/keymaster/km/creds"
+	"github.com/bsycorp/keymaster/km/idp/saml"
 	"github.com/bsycorp/keymaster/km/util"
 	"github.com/ghodss/yaml"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -39,6 +41,10 @@ func (s *Server) Configure(config string) error {
 	}
 
 	tmpConfig.SetDefaults()
+	err = tmpConfig.Validate()
+	if err != nil {
+		return err
+	}
 	s.Config = tmpConfig
 	return nil
 }
@@ -85,12 +91,33 @@ func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.Workflow
 	}
 	credIssuer, err := creds.NewFromConfig(role, &s.Config)
 
-	// TODO: check SAML assertions here
-	// TODO: check Nonce here
-	// TODO: ensure verification of IDP nonce
-
 	if err != nil {
 		return nil, errors.Wrap(err, "during issuer configuration")
+	}
+
+	// TODO: verify issuing nonce
+	// TODO: verify idp nonce
+
+	idpConfig := s.Config.Idp[0] // TODO:
+	idpSamlConfig := idpConfig.Config.(*api.IdpConfigSaml)
+	sp := &saml.AssertionProcessor{
+		CAData:       []byte(idpSamlConfig.Certificate),
+		Audience:     idpSamlConfig.Audience,
+		UsernameAttr: idpSamlConfig.UsernameAttr,
+		EmailAttr:    idpSamlConfig.EmailAttr,
+		GroupsAttr:   idpSamlConfig.GroupsAttr,
+		RedirectURI:  idpSamlConfig.RedirectURI,
+	}
+	err = sp.Init()
+	if err != nil {
+		return nil, errors.Wrap(err, "saml init error")
+	}
+	userInfos, err := sp.Process(req.IdpNonce, req.Assertions)
+	if err != nil {
+		return nil, errors.Wrap(err, "saml validation error")
+	}
+	for _, userInfo := range userInfos {
+		log.Println("user info:", userInfo)
 	}
 
 	userInfo := api.AuthInfo{
