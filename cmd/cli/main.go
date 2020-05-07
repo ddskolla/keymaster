@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/bsycorp/keymaster/km/api"
+	"github.com/bsycorp/keymaster/km/idp/saml"
 	"github.com/bsycorp/keymaster/km/workflow"
 	"github.com/pkg/errors"
 	"gopkg.in/ini.v1"
@@ -78,9 +79,9 @@ func main() {
 		ApproverRoles:       configWorkflowPolicy.ApproverRoles,
 	}
 
-	// Then create a workflow client
-	// TODO: the workflow URL should come from config
-	workflowApi, err := workflow.NewClient("https://workflow.int.btr.place/1")
+	workflowBaseUrl := configResp.Config.Workflow.BaseUrl
+	log.Println("Using workflow engine:", workflowBaseUrl)
+	workflowApi, err := workflow.NewClient(workflowBaseUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -138,6 +139,43 @@ func main() {
 		}
 	}
 	log.Printf("got: %d assertions from workflow", len(getAssertionsResult.Assertions))
+
+	// Locally verify the assertions
+	sp := &saml.AssertionProcessor{
+		CAData: []byte(`
+-----BEGIN CERTIFICATE-----
+MIICnTCCAYUCBgFfA+Q72DANBgkqhkiG9w0BAQsFADASMRAwDgYDVQQDDAdjbHVz
+dGVyMB4XDTE3MTAxMDAxMjUxMFoXDTI3MTAxMDAxMjY1MFowEjEQMA4GA1UEAwwH
+Y2x1c3RlcjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMdVYTd1h7fa
+u6/uCgboFyFdoRSWFEHP0Iq9GUWA69g2x+QDqZikSv/JqPwtJBAm+dxdXfOd0RKT
+4ypK09PUNy542kJ+Qwgzwif0ZIEKTYOVS8VvwzZv6BjzwDzSBS/LmdcK8WgRGwgh
+62QgjIYQdGd+wrYN0tOQb6EzINWMs1bq9bFjeFegDG94p/MZ1YWRVXF6h/euq/ym
+gJQc7yvUn5cy6l47tT1ARrCzpUF8Ss4eVhNlLDaz5WSzZ4P1Q+bPe4Iax//zMr/J
+62aqmcf/YuVKIINLa5ML+QFW2B+mR0xky8jwWJiwU5gJzDzLoiNQZ3TJxcfvQaT1
+PuC8ksM9bd0CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAvnrKy75SHGEAIPORf2QC
+NxqWi6Qc/Pl1gHSGHd9nPcIn7u2dRmoq45XWAr55yVZqT/FWshOII504YuFJCQF5
+fyOGKy00jVmaOEIPqyLRA0wf4AsZk607Y2CVZIl1JGwuYx5rHgZ2kf1M4Qxvnhl/
+OUkMrW+VosBgIrqiKWd53Y5TnHaX/q+hYoa/GmRXq0JTJOX+5C11YX9G4rsI7o3c
+MP19yto+e+d5myXu3POAvx4VG07LlWWk3cow2xuiw4zJbZVmK6KO2rMk66WJpfQu
+EmyLmLPjKTmhoskvaHhvSoW6h06Uth3Lf6UHHsAkdzeU+mw0g2Zb2dPlDqz4IV4t
+cg==
+-----END CERTIFICATE-----`),
+		Audience:     "keymaster-saml",
+		UsernameAttr: "name",
+		EmailAttr:    "name",
+		GroupsAttr:   "groups",
+		RedirectURI:  "https://workflow.int.btr.place/1/saml/approve",
+
+	}
+	err = sp.Init()
+	if err != nil {
+		log.Fatalln("saml init error:", err)
+	}
+	res, err := sp.Process(kmWorkflowStartResponse.IdpNonce, getAssertionsResult.Assertions)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(res)
 
 	creds, err := kmApi.WorkflowAuth(&api.WorkflowAuthRequest{
 		Username:     "gitlab", // TODO

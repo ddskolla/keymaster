@@ -93,7 +93,7 @@ func TestLoadSampleConfigs(t *testing.T) {
 			},
 		},
 		Workflow: WorkflowConfig{
-			BaseUrl: "https://workflow.bsy.place/1/",
+			BaseUrl: "https://workflow.int.btr.place/",
 			Policies: []WorkflowPolicyConfig{
 				{
 					Name:                "deploy_with_identify",
