@@ -36,7 +36,6 @@ func (sp *AssertionProcessor) Init() error {
 		GroupsAttr:                      sp.GroupsAttr,
 		RedirectURI:                     sp.RedirectURI,
 		SSOURL:                          "UNUSED",
-		InsecureSkipSignatureValidation: true, // TODO
 	}
 	conn, err := c.Open("saml", logrus.New())
 	if err != nil {

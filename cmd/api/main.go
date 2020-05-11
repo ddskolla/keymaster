@@ -10,7 +10,6 @@ import (
 	"os"
 )
 
-
 func Handler(ctx context.Context, req api.Request) (interface{}, error) {
 	var km server.Server
 	err := km.Configure(os.Getenv("CONFIG"))

@@ -75,7 +75,7 @@ func (s *Server) HandleDirectOidcAuth(req *api.DirectOidcAuthRequest) (*api.Dire
 }
 
 func (s *Server) HandleWorkflowStart(req *api.WorkflowStartRequest) (*api.WorkflowStartResponse, error) {
-	// NOTE: this will be a JWT in future to allow stateless operation.
+	// TODO: this will be a JWT in future
 	uu := uuid.New()
 	uu2 := uuid.New()
 	return &api.WorkflowStartResponse{
@@ -85,20 +85,37 @@ func (s *Server) HandleWorkflowStart(req *api.WorkflowStartRequest) (*api.Workfl
 }
 
 func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.WorkflowAuthResponse, error) {
+	// Find the requested role
 	role := s.Config.FindRoleByName(req.Role)
 	if role == nil {
 		return nil, errors.Errorf("requested role not found: %s", req.Role)
 	}
-	credIssuer, err := creds.NewFromConfig(role, &s.Config)
-
-	if err != nil {
-		return nil, errors.Wrap(err, "during issuer configuration")
+	// Find the workflow policy for the requested role
+	rolePolicy := s.Config.Workflow.FindPolicyByName(role.Workflow)
+	if rolePolicy == nil {
+		return nil, errors.Errorf("requested role policy not found: %s", role.Workflow)
+	}
+	// Validate that there are no identify roles
+	if len(rolePolicy.IdentifyRoles) > 0 {
+		return nil, errors.New("requested role requires identification; not supported")
+	}
+	// Validate that there is just one approval role
+	if len(rolePolicy.ApproverRoles) > 1 {
+		return nil, errors.New("multiple approver support not implemented")
+	}
+	// There should be as many IDP assertions as approvers
+	if len(req.Assertions) != len(rolePolicy.ApproverRoles) {
+		return nil, errors.New("wrong number of saml assertions submitted")
+	}
+	// Ensure there is just 1 IDP in configuration
+	if len(s.Config.Idp) > 0 {
+		return nil, errors.New("multiple IDP support not implemented")
 	}
 
 	// TODO: verify issuing nonce
 	// TODO: verify idp nonce
 
-	idpConfig := s.Config.Idp[0] // TODO:
+	idpConfig := s.Config.Idp[0]
 	idpSamlConfig := idpConfig.Config.(*api.IdpConfigSaml)
 	sp := &saml.AssertionProcessor{
 		CAData:       []byte(idpSamlConfig.Certificate),
@@ -108,7 +125,7 @@ func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.Workflow
 		GroupsAttr:   idpSamlConfig.GroupsAttr,
 		RedirectURI:  idpSamlConfig.RedirectURI,
 	}
-	err = sp.Init()
+	err := sp.Init()
 	if err != nil {
 		return nil, errors.Wrap(err, "saml init error")
 	}
@@ -116,8 +133,34 @@ func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.Workflow
 	if err != nil {
 		return nil, errors.Wrap(err, "saml validation error")
 	}
+
+	// Count approvals from IDP assertions
+	approvals := make(map[string]int)
 	for _, userInfo := range userInfos {
-		log.Println("user info:", userInfo)
+		log.Println("Processing assertion from:", userInfo)
+		approvalsFromUser := 0
+		for _, groupName := range userInfo.Groups {
+			_, found := rolePolicy.ApproverRoles[groupName]
+			if found {
+				approvals[groupName]++
+				approvalsFromUser++
+			}
+		}
+		// One assertion should represent just 1 approval from relevant group
+		if approvalsFromUser == 0 {
+			return nil, errors.Errorf("assertion with no valid approval groups from: %s", userInfo.Username)
+		}
+		if approvalsFromUser > 1 {
+			return nil, errors.Errorf("assertion meets more than 1 approval group from: %s", userInfo.Username)
+		}
+	}
+	// Validate that the required number of approvals were met
+	for groupName, requiredApprovals := range rolePolicy.ApproverRoles {
+		actualApprovals := approvals[groupName]
+		if actualApprovals < requiredApprovals {
+			return nil, errors.Errorf("not enough approvals, want: %d, got: %d",
+				requiredApprovals, actualApprovals)
+		}
 	}
 
 	userInfo := api.AuthInfo{
@@ -125,6 +168,10 @@ func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.Workflow
 		Role:        req.Role,
 		Username:    req.Username,
 		ValidFor:    role.ValidForSeconds,
+	}
+	credIssuer, err := creds.NewFromConfig(role, &s.Config)
+	if err != nil {
+		return nil, errors.Wrap(err, "during issuer configuration")
 	}
 	issuedCreds, err := credIssuer.IssueFor(&userInfo)
 	if err != nil {

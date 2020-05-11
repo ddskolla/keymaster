@@ -37,9 +37,10 @@ func (c *Config) Validate() error {
 	if c.Version != "1.0" {
 		return errors.Errorf("unsupported version: %s", c.Version)
 	}
-	// TODO: validate roles
-	// TODO: validate workflows
-	// TODO: etc
+	if len(c.Idp) > 1 {
+		// TODO: multiple IDP support
+		return errors.New("only 1 IDP is supported")
+	}
 	return nil
 }
 
@@ -128,7 +129,7 @@ type CredentialsConfigIAMAssumeRole struct {
 }
 
 type CredentialsConfigIAMUser struct {
-	// TODO
+	// TODO: IAM user support
 }
 
 type WorkflowConfig struct {
