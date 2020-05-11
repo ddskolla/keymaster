@@ -15,7 +15,7 @@ type Config struct {
 	AccessControl AccessControlConfig `json:"access_control"`
 }
 
-func (c *Config) SetDefaults() {
+func (c *Config) Normalise() {
 	// We default to version 1.0 if not specified
 	if c.Version == "" {
 		c.Version = "1.0"

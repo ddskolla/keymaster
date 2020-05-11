@@ -40,7 +40,7 @@ func (s *Server) Configure(config string) error {
 		}
 	}
 
-	tmpConfig.SetDefaults()
+	tmpConfig.Normalise()
 	err = tmpConfig.Validate()
 	if err != nil {
 		return err
@@ -140,6 +140,7 @@ func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.Workflow
 		log.Println("Processing assertion from:", userInfo)
 		approvalsFromUser := 0
 		for _, groupName := range userInfo.Groups {
+			groupName := strings.ToLower(groupName)
 			_, found := rolePolicy.ApproverRoles[groupName]
 			if found {
 				approvals[groupName]++

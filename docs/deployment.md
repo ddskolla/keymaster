@@ -7,7 +7,7 @@ system for use with CI.
 
 The change target of a CI deployment operation will be referred 
 to as an "environment". Ideally each environment will have it's own
-unique cloud account. This is not required, however. For example,
+unique cloud account. This is recommended, not required. For example,
 "test" and "staging" might be tenants in the same cloud account.
 
 ## Workflow engine 
@@ -33,15 +33,13 @@ disrupting production deployments.
 
 The workflow engine requires:
 
-* A docker
-* An HTTPS ingress with an associated domain name
+* Running docker container
+* HTTPS ingress with an associated domain name
 * DynamoDB access (for managing approval state)
 
 It does not require:
 
 * Direct connectivity to any target software environments.
-
-Terraform code will be provided to deploy the workflow engine.
 
 At this time the workflow engine does not require any environment
 specific configuration - workflow is driven by configuration
@@ -50,7 +48,7 @@ provided by the issuing lambda (passed via the client).
 ## Identity Provider (IDP)
 
 You will need an identity provider. At this stage only SAML IDPs
-are supported, although OpenID connect is on our roadmap.
+are supported, although OpenID connect is on the roadmap.
 
 One federation will be required between the IDP and the workflow
 engine. Items to be deployed are:
@@ -64,9 +62,6 @@ created for each target software environment.
 
 The keymaster issuing lambda for the target environment will need
 to be granted permission to assume the relevant roles.
-
-In high security environments issued credentials maybe wrapped
-with a KMS key. 
 
 The keymaster terraform code provides an example.
 
