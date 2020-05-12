@@ -143,7 +143,7 @@ func TestLoadSampleConfigs(t *testing.T) {
 		},
 		AccessControl: AccessControlConfig{
 			IPOracle: IPOracleConfig{
-				WhiteListCidrs: []string{"192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"},
+				WhiteListCIDRs: []string{"192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"},
 			},
 		},
 	}

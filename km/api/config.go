@@ -16,7 +16,7 @@ type Config struct {
 }
 
 func (c *Config) Normalise() {
-	// We default to version 1.0 if not specified
+	// Default to version 1.0 if not specified
 	if c.Version == "" {
 		c.Version = "1.0"
 	}
@@ -90,6 +90,7 @@ type IdpConfigOidc struct {
 
 type RoleConfig struct {
 	Name               string                       `json:"name"`
+	Auth               string                       `json:"auth"`
 	Workflow           string                       `json:"workflow"`
 	Credentials        []string                     `json:"credentials"`
 	ValidForSeconds    int                          `json:"valid_for_seconds"`
@@ -103,6 +104,21 @@ func (c *ConfigPublic) FindRoleByName(name string) *RoleConfig {
 		}
 	}
 	return nil
+}
+
+type RoleAuth struct {
+	SharedSecret string      `json:"shared_secret"`
+	JWT          RoleAuthJWT `json:"jwt"`
+}
+
+type RoleAuthJWT struct {
+	RequireHeaders map[string]string     `json:"require_headers"`
+	RequireClaims  map[string]string     `json:"require_claims"`
+	VerifyWith     RoleAuthJWTVerifyWith `json:"verify_with"`
+}
+
+type RoleAuthJWTVerifyWith struct {
+	JWKSLiteral string `json:"jwks_literal"`
 }
 
 type RoleCredentialDeliveryConfig struct {
@@ -159,7 +175,7 @@ type AccessControlConfig struct {
 }
 
 type IPOracleConfig struct {
-	WhiteListCidrs []string `json:"whitelist_cidrs"`
+	WhiteListCIDRs []string `json:"whitelist_cidrs"`
 }
 
 func (c *IdpConfig) UnmarshalJSON(data []byte) error {

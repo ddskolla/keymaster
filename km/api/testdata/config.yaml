@@ -33,9 +33,34 @@ roles:
     credentials: [kube-admin, aws-admin]
     workflow: deploy_with_approval
     valid_for_seconds: 3600
+  - name: deployment-with-credential-wrap
+    credentials: [kube-admin, aws-admin]
+    workflow: deploy_with_approval
+    valid_for_seconds: 3600
     credential_delivery:
       # KMS alias or ARN
       kms_wrap_with: arn:aws:kms:ap-southeast-2:062921715532:key/95a6a059-8281-4280-8500-caf8cc217367
+  - name: deployment-with-shared-secret
+    credentials: [kube-admin, aws-admin]
+    workflow: deploy_with_approval
+    valid_for_seconds: 3600
+    auth:
+      shared_secret: "hunter2"
+  - name: deployment-with-jwt-auth
+    credentials: [kube-admin, aws-admin]
+    workflow: deploy_with_approval
+    valid_for_seconds: 3600
+    auth:
+      jwt:
+        require_headers:
+          alg: RS256
+          kid: f4MyU7qnGmDbcCejhNl38yF-eBYQ7XIzr5v25e9kdhc
+        require_claims:
+          iss: some.gitlab.instance.com
+          project_path: sec/pipeline-test
+        verify_with:
+          jwks_literal: |
+            {"keys":[{"kty":"RSA","kid":"f4MyU7qnGmDbcCejhNl38yF-eBYQ7XIzr5v25e9kdhc","e":"AQAB","n":"xuwNBbJR79sBLWi9y77b9r_voQlUmUZDFymZBFMs364Emht1b7knWr6mBrt_w_nfNhr64gmRuiylUL6iTjUfuoyHK3oYeYE0k89Y9-pU2_KQ4kZbq1ehqi7Y7Ctx3-9j72MQv1yl3q0kKak-JVcp3Mq87ndA7oGB-L6fbNV97kTtR-M_TML5kmr47ETN5yGm75xKnIM2SSczscQ2Furh0W0UREXJOVkqXK53plQ9jqE21pg3Fns7U-jh9SaVQCynx7vFM2zoRAWFXi1W1DdtovWiazjC0Eh3qH9JSDWCc3FH3ejfjqL66iCBMGX1nKaMCsOLOQymhB_ztG74E7s2ZenpcVUOOg7i1ey9Hf5FBRy6xRlLGrkevx4aQQUL7Fpai8WRqCkbLo9yzcVJu8OIg6ZJ9Zq70vOevAHS5hN-22Vr-kJ5Ic7XyZQv-tMIeD-Q8WOypFfNuTy2JH3FPb2sOwqRWF2KgWPBTryb2R0qIO3yJvOutQmZx3GL4rjso6-LwShhPw_UawW2Pi8M2JvQXpT0F7XNB6_rfO5iqPElYBbQiACLrNTZNMBZgXZjsDmTGHEzQwrbdpye1JP3f4KFqYFknc3jzr1al0r3RGZYl5siL_B3CicYQ--Ao65V-yhAfSQ6o9diZrAMSVmkw5H2sRKRBS3ChUGI3wTlHgvY4X8","use":"sig","alg":"RS256"}]}
 workflow:
   base_url: https://workflow.int.btr.place/
   policies:
