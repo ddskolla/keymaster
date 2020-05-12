@@ -6,7 +6,7 @@ idp:
     config:
       audience: keymaster-saml
       username_attr: name
-      email_attr: name
+      email_attr: name     # ignored
       groups_attr: groups
       redirect_uri: https://workflow.int.btr.place/1/saml/approve
       # Cert may be specified as s3:// file:// or raw data
@@ -29,78 +29,21 @@ idp:
         cg==
         -----END CERTIFICATE-----
 roles:
-  - name: cloudengineer
-    credentials: [ssh-all, kube, aws-admin]
-    workflow: cloudengineer
-    valid_for_seconds: 7200
-  - name: developer
-    credentials: [ssh-jumpbox, kube, aws-ro]
-    workflow: developer
-    valid_for_seconds: 7200
   - name: deployment
-    credentials: [kube-admin, aws-admin]
+    credentials: [aws-admin]
     workflow: deploy_with_approval
     valid_for_seconds: 3600
-    credential_delivery:
-      # KMS alias or ARN
-      kms_wrap_with: arn:aws:kms:ap-southeast-2:062921715599:key/95a6a059-8281-4280-8500-caf8cc217367
 workflow:
   base_url: https://workflow.int.btr.place/
   policies:
-    - name: deploy_with_identify
-      identify_roles:
-        adfs_role_deployer: 1
     - name: deploy_with_approval
       requester_can_approve: false
       approver_roles:
-        adfs_role_approver: 1
-    - name: deploy_with_identify_and_approval
-      requester_can_approve: false
-      identify_roles:
-        adfs_role_deployer: 1
-      approver_roles:
-        adfs_role_approver: 1
-    - name: developer
-      identify_roles:
-        adfs_role_developer: 1
-    - name: cloudengineer
-      identify_roles:
-        adfs_role_cloudengineer: 1
+        Approvers: 1
 credentials:
-  - name: ssh-jumpbox
-    type: ssh_ca
-    config:
-      # Can be s3:// file:// or raw data
-      ca_key: s3://my-bucket/sshca.key
-      principals: [$idpuser]
-  - name: ssh-all
-    type: ssh_ca
-    config:
-      # Can be s3:// file:// or raw data
-      ca_key: s3://my-bucket/sshca.key
-      principals: [$idpuser, core, ec2-user]
-  - name: kube-user
-    type: kubernetes
-    config:
-      # Can be s3:// file:// or raw data
-      ca_key: s3://my-bucket/kubeca.key
-  - name: kube-admin
-    type: kubernetes
-    config:
-      # Can be s3:// file:// or raw data
-      ca_key: s3://my-bucket/kubeca.key
-  - name: aws-ro
-    type: iam_assume_role
-    config:
-      # Can be role ARN or role name, e.g. ARN of ReadOnly
-      # role in an account that km can assume-role to.
-      target_role: arn:aws:iam::062921715699:role/ReadOnly
   - name: aws-admin
     type: iam_assume_role
     config:
       # Can be role ARN or role name, if only name is given the
       # role will be looked up in the target account.
       target_role: arn:aws:iam::218296299700:role/test_env_admin
-access_control:
-  ip_oracle:
-    whitelist_cidrs: ["192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"]

@@ -140,7 +140,6 @@ func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.Workflow
 		log.Println("Processing assertion from:", userInfo)
 		approvalsFromUser := 0
 		for _, groupName := range userInfo.Groups {
-			groupName := strings.ToLower(groupName)
 			_, found := rolePolicy.ApproverRoles[groupName]
 			if found {
 				approvals[groupName]++
@@ -149,7 +148,14 @@ func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.Workflow
 		}
 		// One assertion should represent just 1 approval from relevant group
 		if approvalsFromUser == 0 {
-			return nil, errors.Errorf("assertion with no valid approval groups from: %s", userInfo.Username)
+			i := 0
+			requiredGroups := make([]string, len(rolePolicy.ApproverRoles))
+			for k := range rolePolicy.ApproverRoles {
+				requiredGroups[i] = k
+				i++
+			}
+			return nil, errors.Errorf("assertion with no valid approval groups from: %s got: %s want: %s",
+				userInfo.Username, userInfo.Groups, requiredGroups)
 		}
 		if approvalsFromUser > 1 {
 			return nil, errors.Errorf("assertion meets more than 1 approval group from: %s", userInfo.Username)
