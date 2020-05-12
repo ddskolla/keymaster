@@ -1,0 +1,111 @@
+name: fooproject_nonprod
+version: "1.0"
+idp:
+  - name: nonprod
+    type: saml
+    config:
+      audience: keymaster-saml
+      username_attr: name
+      email_attr: name
+      groups_attr: groups
+      redirect_uri: https://workflow.int.btr.place/1/saml/approve
+      # Cert may be specified as s3:// file:// or raw data
+      certificate: |
+        -----BEGIN CERTIFICATE-----
+        MIICnTCCAYUCBgFfA+Q72DANBgkqhkiG9w0BAQsFADASMRAwDgYDVQQDDAdjbHVz
+        dGVyMB4XDTE3MTAxMDAxMjUxMFoXDTI3MTAxMDAxMjY1MFowEjEQMA4GA1UEAwwH
+        Y2x1c3RlcjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMdVYTd1h7fa
+        u6/uCgboFyFdoRSWFEHP0Iq9GUWA69g2x+QDqZikSv/JqPwtJBAm+dxdXfOd0RKT
+        4ypK09PUNy542kJ+Qwgzwif0ZIEKTYOVS8VvwzZv6BjzwDzSBS/LmdcK8WgRGwgh
+        62QgjIYQdGd+wrYN0tOQb6EzINWMs1bq9bFjeFegDG94p/MZ1YWRVXF6h/euq/ym
+        gJQc7yvUn5cy6l47tT1ARrCzpUF8Ss4eVhNlLDaz5WSzZ4P1Q+bPe4Iax//zMr/J
+        62aqmcf/YuVKIINLa5ML+QFW2B+mR0xky8jwWJiwU5gJzDzLoiNQZ3TJxcfvQaT1
+        PuC8ksM9bd0CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAvnrKy75SHGEAIPORf2QC
+        NxqWi6Qc/Pl1gHSGHd9nPcIn7u2dRmoq45XWAr55yVZqT/FWshOII504YuFJCQF5
+        fyOGKy00jVmaOEIPqyLRA0wf4AsZk607Y2CVZIl1JGwuYx5rHgZ2kf1M4Qxvnhl/
+        OUkMrW+VosBgIrqiKWd53Y5TnHaX/q+hYoa/GmRXq0JTJOX+5C11YX9G4rsI7o3c
+        MP19yto+e+d5myXu3POAvx4VG07LlWWk3cow2xuiw4zJbZVmK6KO2rMk66WJpfQu
+        EmyLmLPjKTmhoskvaHhvSoW6h06Uth3Lf6UHHsAkdzeU+mw0g2Zb2dPlDqz4IV4t
+        cg==
+        -----END CERTIFICATE-----
+roles:
+  - name: cloudengineer
+    credentials: [ssh-all, kube, aws-admin]
+    workflow: cloudengineer
+    valid_for_seconds: 7200
+  - name: developer
+    credentials: [ssh-jumpbox, kube, aws-ro]
+    workflow: developer
+    valid_for_seconds: 7200
+  - name: deployment
+    credentials: [kube, aws-admin]
+    workflow: deploy_with_approval
+    valid_for_seconds: 3600
+    credential_delivery:
+      # KMS alias or ARN
+      kms_wrap_with: arn:aws:kms:ap-southeast-2:062921715532:key/95a6a059-8281-4280-8500-caf8cc217367
+workflow:
+  base_url: https://workflow.int.btr.place/
+  policies:
+    - name: deploy_with_identify
+      idp_name: nonprod
+      identify_roles:
+        adfs_role_deployer: 1
+    - name: deploy_with_approval
+      idp_name: nonprod
+      requester_can_approve: false
+      approver_roles:
+        adfs_role_approver: 1
+    - name: deploy_with_identify_and_approval
+      idp_name: nonprod
+      requester_can_approve: false
+      identify_roles:
+        adfs_role_deployer: 1
+      approver_roles:
+        adfs_role_approver: 1
+    - name: developer
+      idp_name: nonprod
+      identify_roles:
+        adfs_role_developer: 1
+    - name: cloudengineer
+      idp_name: nonprod
+      identify_roles:
+        adfs_role_cloudengineer: 1
+credentials:
+  - name: ssh-jumpbox
+    type: ssh_ca
+    config:
+      # Can be s3:// file:// or raw data
+      ca_key: s3://my-bucket/sshca.key
+      principals: [$idpuser]
+  - name: ssh-all
+    type: ssh_ca
+    config:
+      # Can be s3:// file:// or raw data
+      ca_key: s3://my-bucket/sshca.key
+      principals: [$idpuser, core, ec2-user]
+  - name: kube-user
+    type: kubernetes
+    config:
+      # Can be s3:// file:// or raw data
+      ca_key: s3://my-bucket/kubeca.key
+  - name: kube-admin
+    type: kubernetes
+    config:
+      # Can be s3:// file:// or raw data
+      ca_key: s3://my-bucket/kubeca.key
+  - name: aws-ro
+    type: iam_assume_role
+    config:
+      # Can be role ARN or role name, e.g. ARN of ReadOnly
+      # role in an account that km can assume-role to.
+      target_role: arn:aws:iam::062921715666:role/ReadOnly
+  - name: aws-admin
+    type: iam_assume_role
+    config:
+      # Can be role ARN or role name, if only name is given the
+      # role will be looked up in the target account.
+      target_role: Administrator
+access_control:
+  ip_oracle:
+    whitelist_cidrs: ["192.168.0.0/24", "172.16.0.0/12", "10.0.0.0/8"]
