@@ -44,10 +44,10 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/v')
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
         draft: true
-        with:
-          files: |
-            build/km-linux-x64
-            build/km-darwin-x64
-            build/km-win-x64.exe
-            build/keymaster-issuing-lambda.zip
+        files: |
+          build/km-linux-x64
+          build/km-darwin-x64
+          build/km-win-x64.exe
+          build/keymaster-issuing-lambda.zip
