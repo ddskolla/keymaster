@@ -100,7 +100,7 @@ func main() {
 		},
 		Target: workflow.Target{
 			EnvironmentName:         configResp.Config.Name,
-			EnvironmentDiscoveryURI: "TBD",
+			EnvironmentDiscoveryURI: target,
 		},
 		Policy: workflowPolicy,
 	})

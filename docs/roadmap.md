@@ -2,7 +2,7 @@
 
 ## High priority
 
-* Better integration testing
+* Better integration testing, travis support
 * Support gitlab pipeline JWTs for auth
 * Credential "wrapping" with KMS
 * Improved documentation
