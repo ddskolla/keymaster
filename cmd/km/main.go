@@ -15,6 +15,7 @@ import (
 	"time"
 )
 
+var targetFlag = flag.String("target", "", "target issuer")
 var roleFlag = flag.String("role", "", "target role")
 var debugFlag = flag.Int("debug", 0, "enable debugging")
 var debugLevel = 0
@@ -31,13 +32,16 @@ func main() {
 	if *roleFlag == "" {
 		log.Fatalln("Required argument role missing (need -role)")
 	}
+	if *targetFlag == "" {
+		log.Fatalln("Required argument taget is missing (need -target)")
+	}
 	debugLevel = *debugFlag
 	// Draft workflow
 
 	// First, get the config
 	// target := "arn:aws:lambda:ap-southeast-2:062921715532:function:km2"
 	//target := "arn:aws:apigateway:ap-southeast-2:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-2:218296299700:function:km2/invocations"
-	target := "arn:aws:lambda:ap-southeast-2:218296299700:function:km-tools-bls-01"
+	target := *targetFlag
 	kmApi := api.NewClient(target)
 	kmApi.Debug = debugLevel
 
