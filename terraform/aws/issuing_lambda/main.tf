@@ -75,7 +75,7 @@
  *     workflow: deploy_with_approval
  *     valid_for_seconds: 3600
  * workflow:
- *   base_url: https://your.workflow.engine/
+ *   base_url: https://workflow.int.btr.place/
  *   policies:
  *     - name: deploy_with_approval
  *       requester_can_approve: false
