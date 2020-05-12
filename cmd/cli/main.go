@@ -63,7 +63,7 @@ func main() {
 	log.Println("Target role for authentication:", *roleFlag)
 	targetRole := configResp.Config.FindRoleByName(*roleFlag)
 	if targetRole == nil {
-		log.Fatalf("Target role #{*roleFlag} not found in config")
+		log.Fatalf("Target role #{roleFlag} not found in config")
 	}
 	workflowPolicyName := targetRole.Workflow
 	configWorkflowPolicy := configResp.Config.Workflow.FindPolicyByName(workflowPolicyName)

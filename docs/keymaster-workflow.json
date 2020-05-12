@@ -1,0 +1,740 @@
+{
+  "summary": {
+    "title": "Keymaster Workflow Threat Model",
+    "owner": "Blair Strang",
+    "description": ""
+  },
+  "detail": {
+    "contributors": [],
+    "diagrams": [
+      {
+        "title": "Workflow Creation",
+        "thumbnail": "./public/content/images/thumbnail.jpg",
+        "id": 0,
+        "$$hashKey": "object:70",
+        "diagramJson": {
+          "cells": [
+            {
+              "type": "tm.Actor",
+              "size": {
+                "width": 160,
+                "height": 80
+              },
+              "position": {
+                "x": 329,
+                "y": 12
+              },
+              "angle": 0,
+              "id": "943ca797-4e41-4e3c-9bb1-4860fd87fae6",
+              "z": 1,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".element-shape": {
+                  "class": "element-shape hasNoOpenThreats isInScope"
+                },
+                "text": {
+                  "text": "km client"
+                },
+                ".element-text": {
+                  "class": "element-text hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Process",
+              "size": {
+                "width": 100,
+                "height": 100
+              },
+              "position": {
+                "x": 107,
+                "y": 301
+              },
+              "angle": 0,
+              "id": "a7b4a6d5-47b9-4899-858d-be82621222a7",
+              "z": 2,
+              "hasOpenThreats": false,
+              "privilegeLevel": "Admin",
+              "attrs": {
+                ".element-shape": {
+                  "class": "element-shape hasNoOpenThreats isInScope"
+                },
+                "text": {
+                  "text": "Keymaster\nIssuing Lambda"
+                },
+                ".element-text": {
+                  "class": "element-text hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Boundary",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "x": 20,
+                "y": 307
+              },
+              "target": {
+                "x": 305,
+                "y": 488
+              },
+              "vertices": [
+                {
+                  "x": 206,
+                  "y": 259
+                }
+              ],
+              "id": "99061f89-50ba-49b9-993d-73ca0d713986",
+              "z": 4,
+              "attrs": {}
+            },
+            {
+              "type": "tm.Process",
+              "size": {
+                "width": 100,
+                "height": 100
+              },
+              "position": {
+                "x": 496,
+                "y": 267
+              },
+              "angle": 0,
+              "id": "33ee02e7-e1ca-4e05-8aaa-3cae58fa5076",
+              "z": 7,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".element-shape": {
+                  "class": "element-shape hasNoOpenThreats isInScope"
+                },
+                "text": {
+                  "text": "Workflow\nEngine"
+                },
+                ".element-text": {
+                  "class": "element-text hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Boundary",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "x": 400,
+                "y": 480
+              },
+              "target": {
+                "x": 637,
+                "y": 260
+              },
+              "vertices": [
+                {
+                  "x": 496,
+                  "y": 238
+                }
+              ],
+              "id": "e53bb4ba-b126-45e7-8d00-bd907c7194ad",
+              "z": 8,
+              "attrs": {}
+            },
+            {
+              "type": "tm.Flow",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "id": "943ca797-4e41-4e3c-9bb1-4860fd87fae6"
+              },
+              "target": {
+                "id": "a7b4a6d5-47b9-4899-858d-be82621222a7"
+              },
+              "vertices": [
+                {
+                  "x": 161,
+                  "y": 37
+                },
+                {
+                  "x": 73,
+                  "y": 97
+                },
+                {
+                  "x": 57,
+                  "y": 220
+                }
+              ],
+              "id": "cf78caa3-5a14-4185-b9d6-f4bf771c7f3d",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.4476593588140215,
+                    "offset": 7.012091617071959
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "1. Discovery Request",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 9,
+              "hasOpenThreats": false,
+              "protocol": "HTTPS",
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasNoOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Store",
+              "size": {
+                "width": 160,
+                "height": 80
+              },
+              "position": {
+                "x": 88,
+                "y": 449
+              },
+              "angle": 0,
+              "id": "b8f74ed5-74cf-4444-af98-a5e2701f11b7",
+              "z": 11,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".element-shape": {
+                  "class": "element-shape hasNoOpenThreats isInScope"
+                },
+                "text": {
+                  "text": "Keymaster Config"
+                },
+                ".element-text": {
+                  "class": "element-text hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "id": "943ca797-4e41-4e3c-9bb1-4860fd87fae6"
+              },
+              "target": {
+                "id": "a7b4a6d5-47b9-4899-858d-be82621222a7"
+              },
+              "vertices": [
+                {
+                  "x": 183,
+                  "y": 160
+                }
+              ],
+              "id": "c9e80794-fae0-423c-9a01-40b503877d35",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.44232080734844353,
+                    "offset": -3.4373022939880933
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "2. Get Config Request",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 12,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasNoOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "id": "943ca797-4e41-4e3c-9bb1-4860fd87fae6"
+              },
+              "target": {
+                "id": "a7b4a6d5-47b9-4899-858d-be82621222a7"
+              },
+              "vertices": [
+                {
+                  "x": 322,
+                  "y": 218
+                }
+              ],
+              "id": "23742722-ced6-40af-81ee-1308ebe65912",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.5010932897282325,
+                    "offset": 13.189016269415339
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "3. Start Workflow\nRequest",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 13,
+              "hasOpenThreats": false,
+              "protocol": "HTTPS",
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasNoOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Store",
+              "size": {
+                "width": 160,
+                "height": 80
+              },
+              "position": {
+                "x": 480,
+                "y": 437
+              },
+              "angle": 0,
+              "id": "f4dd3d3a-50bb-4931-8887-f402162c61c1",
+              "z": 14,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".element-shape": {
+                  "class": "element-shape hasNoOpenThreats isInScope"
+                },
+                "text": {
+                  "text": "Workflow DynamoDB"
+                },
+                ".element-text": {
+                  "class": "element-text hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "id": "b8f74ed5-74cf-4444-af98-a5e2701f11b7"
+              },
+              "target": {
+                "id": "a7b4a6d5-47b9-4899-858d-be82621222a7"
+              },
+              "vertices": [
+                {
+                  "x": 83,
+                  "y": 422
+                }
+              ],
+              "id": "9ca6f996-6bf8-455b-b1c6-151774b65202",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.08479682082069517,
+                    "offset": 33.07712213907345
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "Reads",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 15,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasNoOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "id": "943ca797-4e41-4e3c-9bb1-4860fd87fae6"
+              },
+              "target": {
+                "id": "33ee02e7-e1ca-4e05-8aaa-3cae58fa5076"
+              },
+              "vertices": [
+                {
+                  "x": 543,
+                  "y": 178
+                }
+              ],
+              "id": "ee65bb59-cbf9-4394-a282-e5642d4ffeee",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.4322001883229637,
+                    "offset": -2.025553854874188
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "4. Create Workflow\nRequest",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 16,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasNoOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "id": "33ee02e7-e1ca-4e05-8aaa-3cae58fa5076"
+              },
+              "target": {
+                "id": "943ca797-4e41-4e3c-9bb1-4860fd87fae6"
+              },
+              "vertices": [
+                {
+                  "x": 618,
+                  "y": 160
+                }
+              ],
+              "id": "9ea558ff-a0e7-47f4-9660-ff41f20cf5a0",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.5124665442342797,
+                    "offset": 44.43792206381099
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "Create Workflow\nResponse",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 17,
+              "hasOpenThreats": false,
+              "protocol": "HTTPS",
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasNoOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "id": "a7b4a6d5-47b9-4899-858d-be82621222a7"
+              },
+              "target": {
+                "id": "943ca797-4e41-4e3c-9bb1-4860fd87fae6"
+              },
+              "vertices": [
+                {
+                  "x": 210,
+                  "y": 181
+                }
+              ],
+              "id": "2ef496f3-e641-4783-bb85-ebe208df67ce",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.554354512274164,
+                    "offset": 6.246388462251752
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "Get Config Response",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 18,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasNoOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "id": "a7b4a6d5-47b9-4899-858d-be82621222a7"
+              },
+              "target": {
+                "id": "943ca797-4e41-4e3c-9bb1-4860fd87fae6"
+              },
+              "vertices": [
+                {
+                  "x": 82,
+                  "y": 216
+                },
+                {
+                  "x": 131,
+                  "y": 85
+                }
+              ],
+              "id": "218052e5-e6b0-4a20-9d31-1f666cf3b33f",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.5552108460927698,
+                    "offset": -0.5724750180846682
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "Discovery Response",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 19,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasNoOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "id": "a7b4a6d5-47b9-4899-858d-be82621222a7"
+              },
+              "target": {
+                "id": "943ca797-4e41-4e3c-9bb1-4860fd87fae6"
+              },
+              "vertices": [
+                {
+                  "x": 376,
+                  "y": 242
+                }
+              ],
+              "id": "acf5d103-7b8c-442f-98c3-af59e8732621",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.4901150168752229,
+                    "offset": -4.567317219111631
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "Start Workflow\nResponse",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 20,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasNoOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "id": "f4dd3d3a-50bb-4931-8887-f402162c61c1"
+              },
+              "target": {
+                "id": "33ee02e7-e1ca-4e05-8aaa-3cae58fa5076"
+              },
+              "vertices": [
+                {
+                  "x": 601,
+                  "y": 395
+                }
+              ],
+              "id": "985369b2-b61f-4c33-a04a-9a1bc27e7b0f",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.45594103607575315,
+                    "offset": -1.1668389188002264
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "Reads",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 21,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasNoOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            },
+            {
+              "type": "tm.Flow",
+              "size": {
+                "width": 10,
+                "height": 10
+              },
+              "smooth": true,
+              "source": {
+                "id": "33ee02e7-e1ca-4e05-8aaa-3cae58fa5076"
+              },
+              "target": {
+                "id": "f4dd3d3a-50bb-4931-8887-f402162c61c1"
+              },
+              "vertices": [
+                {
+                  "x": 503,
+                  "y": 398
+                }
+              ],
+              "id": "8d2bd05f-4bfb-4395-9963-0a9133eafbb9",
+              "labels": [
+                {
+                  "position": {
+                    "distance": 0.5265166827243749,
+                    "offset": 2.071488561643008
+                  },
+                  "attrs": {
+                    "text": {
+                      "text": "Writes",
+                      "font-weight": "400",
+                      "font-size": "small"
+                    }
+                  }
+                }
+              ],
+              "z": 22,
+              "hasOpenThreats": false,
+              "attrs": {
+                ".marker-target": {
+                  "class": "marker-target hasNoOpenThreats isInScope"
+                },
+                ".connection": {
+                  "class": "connection hasNoOpenThreats isInScope"
+                }
+              }
+            }
+          ]
+        },
+        "size": {
+          "height": 590,
+          "width": 790
+        }
+      },
+      {
+        "title": "Workflow Fulfilment",
+        "thumbnail": "./public/content/images/thumbnail.jpg",
+        "id": 1,
+        "$$hashKey": "object:267"
+      }
+    ]
+  }
+}

@@ -108,7 +108,7 @@ func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.Workflow
 		return nil, errors.New("wrong number of saml assertions submitted")
 	}
 	// Ensure there is just 1 IDP in configuration
-	if len(s.Config.Idp) > 0 {
+	if len(s.Config.Idp) > 1 {
 		return nil, errors.New("multiple IDP support not implemented")
 	}
 

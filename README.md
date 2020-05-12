@@ -2,10 +2,6 @@
 
 Single sign-on for SSH, AWS IAM &amp; Kubernetes, for humans and machines.
 
-## Quick Start
+See: [docs/deployment.md](docs/deployment.md)
 
-Look under ``
-
-## Deployment docs
-
-See: [docs/deployment.md]
+And: [terraform/aws/issuing_lambda/](terraform/aws/issuing_lambda/)

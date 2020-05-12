@@ -23,7 +23,8 @@
  *    "arn:aws:iam::062921715666:root",   # myproj-dev-01
  *   ]
  *
- *   # Enable auto-creation of the configuration bucket
+ *   # Enable creation of the configuration bucket and upload
+ *   # of the configuration file
  *   config_bucket_enable = true
  *   config_file_upload_enable = true
  *   config_file_name = "${path.module}/test_api_config.yaml"
