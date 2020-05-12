@@ -1,6 +1,6 @@
 # keymaster
 
-Single sign-on for SSH, AWS IAM &amp; Kubernetes, for humans and machines
+Single sign-on for SSH, AWS IAM &amp; Kubernetes, for humans and machines.
 
 ## Quick Start
 
