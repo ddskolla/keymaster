@@ -13,10 +13,11 @@ type AssertionProcessor struct {
 	// TODO: verify audience?
 	// TODO: NameID stuff?
 	// TODO: Encryption?
-	UsernameAttr string
-	EmailAttr    string
-	GroupsAttr   string
-	RedirectURI  string
+	UsernameAttr            string
+	EmailAttr               string
+	GroupsAttr              string
+	RedirectURI             string
+	DisableNameIDValidation bool
 
 	conn     connector.Connector
 	samlConn connector.SAMLConnector
@@ -29,13 +30,14 @@ type UserInfo struct {
 
 func (sp *AssertionProcessor) Init() error {
 	c := saml.Config{
-		EntityIssuer:                    sp.Audience,
-		CAData:                          []byte(sp.CAData),
-		UsernameAttr:                    sp.UsernameAttr,
-		EmailAttr:                       sp.EmailAttr,
-		GroupsAttr:                      sp.GroupsAttr,
-		RedirectURI:                     sp.RedirectURI,
-		SSOURL:                          "UNUSED",
+		EntityIssuer:            sp.Audience,
+		CAData:                  []byte(sp.CAData),
+		UsernameAttr:            sp.UsernameAttr,
+		EmailAttr:               sp.EmailAttr,
+		GroupsAttr:              sp.GroupsAttr,
+		RedirectURI:             sp.RedirectURI,
+		SSOURL:                  "UNUSED",
+		DisableNameIDValidation: sp.DisableNameIDValidation,
 	}
 	conn, err := c.Open("saml", logrus.New())
 	if err != nil {

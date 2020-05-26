@@ -124,6 +124,7 @@ func (s *Server) HandleWorkflowAuth(req *api.WorkflowAuthRequest) (*api.Workflow
 		EmailAttr:    idpSamlConfig.EmailAttr,
 		GroupsAttr:   idpSamlConfig.GroupsAttr,
 		RedirectURI:  idpSamlConfig.RedirectURI,
+		DisableNameIDValidation: true,
 	}
 	err := sp.Init()
 	if err != nil {

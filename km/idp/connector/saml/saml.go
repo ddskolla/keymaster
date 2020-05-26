@@ -115,8 +115,8 @@ type Config struct {
 	//
 	//		urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
 	//
-	NameIDPolicyFormat string `json:"nameIDPolicyFormat"`
-	ValidateNameId bool `json:"validateNameId"`
+	NameIDPolicyFormat      string `json:"nameIDPolicyFormat"`
+	DisableNameIDValidation bool   `json:"disableValidateNameID"`
 }
 
 type certStore struct {
@@ -169,8 +169,8 @@ func (c *Config) openConnector(logger log.Logger) (*provider, error) {
 		redirectURI:   c.RedirectURI,
 		logger:        logger,
 
-		nameIDPolicyFormat: c.NameIDPolicyFormat,
-		validateNameID: c.ValidateNameId,
+		nameIDPolicyFormat:      c.NameIDPolicyFormat,
+		disableNameIDValidation: c.DisableNameIDValidation,
 	}
 
 	if p.nameIDPolicyFormat == "" {
@@ -245,8 +245,8 @@ type provider struct {
 
 	redirectURI string
 
-	nameIDPolicyFormat string
-	validateNameID bool
+	nameIDPolicyFormat      string
+	disableNameIDValidation bool
 
 	logger log.Logger
 }
@@ -361,7 +361,7 @@ func (p *provider) HandlePOST(s connector.Scopes, samlResponse, inResponseTo str
 		}
 	}
 
-	if p.validateNameID {
+	if !p.disableNameIDValidation {
 		switch {
 		case subject.NameID != nil:
 			if ident.UserID = subject.NameID.Value; ident.UserID == "" {
