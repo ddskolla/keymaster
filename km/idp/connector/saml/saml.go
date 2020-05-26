@@ -116,6 +116,7 @@ type Config struct {
 	//		urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
 	//
 	NameIDPolicyFormat string `json:"nameIDPolicyFormat"`
+	ValidateNameId bool `json:"validateNameId"`
 }
 
 type certStore struct {
@@ -171,13 +172,15 @@ func (c *Config) openConnector(logger log.Logger) (*provider, error) {
 		nameIDPolicyFormat: c.NameIDPolicyFormat,
 	}
 
-	if p.nameIDPolicyFormat == "" {
-		p.nameIDPolicyFormat = nameIDFormatPersistent
-	} else {
-		if format, ok := nameIDFormatLookup[p.nameIDPolicyFormat]; ok {
-			p.nameIDPolicyFormat = format
+	if c.ValidateNameId {
+		if p.nameIDPolicyFormat == "" {
+			p.nameIDPolicyFormat = nameIDFormatPersistent
 		} else {
-			return nil, fmt.Errorf("invalid nameIDPolicyFormat: %q", p.nameIDPolicyFormat)
+			if format, ok := nameIDFormatLookup[p.nameIDPolicyFormat]; ok {
+				p.nameIDPolicyFormat = format
+			} else {
+				return nil, fmt.Errorf("invalid nameIDPolicyFormat: %q", p.nameIDPolicyFormat)
+			}
 		}
 	}
 
