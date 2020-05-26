@@ -170,17 +170,16 @@ func (c *Config) openConnector(logger log.Logger) (*provider, error) {
 		logger:        logger,
 
 		nameIDPolicyFormat: c.NameIDPolicyFormat,
+		validateNameID: c.ValidateNameId,
 	}
 
-	if c.ValidateNameId {
-		if p.nameIDPolicyFormat == "" {
-			p.nameIDPolicyFormat = nameIDFormatPersistent
+	if p.nameIDPolicyFormat == "" {
+		p.nameIDPolicyFormat = nameIDFormatPersistent
+	} else {
+		if format, ok := nameIDFormatLookup[p.nameIDPolicyFormat]; ok {
+			p.nameIDPolicyFormat = format
 		} else {
-			if format, ok := nameIDFormatLookup[p.nameIDPolicyFormat]; ok {
-				p.nameIDPolicyFormat = format
-			} else {
-				return nil, fmt.Errorf("invalid nameIDPolicyFormat: %q", p.nameIDPolicyFormat)
-			}
+			return nil, fmt.Errorf("invalid nameIDPolicyFormat: %q", p.nameIDPolicyFormat)
 		}
 	}
 
@@ -247,6 +246,7 @@ type provider struct {
 	redirectURI string
 
 	nameIDPolicyFormat string
+	validateNameID bool
 
 	logger log.Logger
 }
@@ -361,13 +361,15 @@ func (p *provider) HandlePOST(s connector.Scopes, samlResponse, inResponseTo str
 		}
 	}
 
-	switch {
-	case subject.NameID != nil:
-		if ident.UserID = subject.NameID.Value; ident.UserID == "" {
-			return ident, fmt.Errorf("NameID element does not contain a value")
+	if p.validateNameID {
+		switch {
+		case subject.NameID != nil:
+			if ident.UserID = subject.NameID.Value; ident.UserID == "" {
+				return ident, fmt.Errorf("NameID element does not contain a value")
+			}
+		default:
+			return ident, fmt.Errorf("subject does not contain an NameID element")
 		}
-	default:
-		return ident, fmt.Errorf("subject does not contain an NameID element")
 	}
 
 	// After verifying the assertion, map data in the attribute statements to
