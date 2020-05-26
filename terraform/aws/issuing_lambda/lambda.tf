@@ -1,7 +1,7 @@
 
 locals {
   timeout              = 30
-  handler              = "api-linux-x64"
+  handler              = "issuing-lambda-linux-x64"
   runtime              = "go1.x"
   config_bucket_name   = var.config_bucket_name == "" ? "km-${var.env_label}" : var.config_bucket_name
   lambda_function_name = var.lambda_function_name == "" ? "km-${var.env_label}" : var.lambda_function_name
